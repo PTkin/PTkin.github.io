@@ -1,0 +1,1011 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Clang,Compiler,GCC,LLVM," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.2" />
+
+
+
+
+
+
+<meta name="description" content="在搞 OpenMP 做并行程序设计的时候由于需要在 Mac 上配置 OpenMP 环境，但是由于 Mac 使用的是 LLVM 编译器，而不是更多人熟知的 GCC 编译器，因此特地查了一些资料，补了一下对这块历史的了解。 本文将简要介绍 GCC、LLVM、Clang 的发展历程与对比等，内容主要参考了网上查询的资料，具体参考链接可见文末的参考链接部分。">
+<meta name="keywords" content="Clang,Compiler,GCC,LLVM">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GCC、LLVM、Clang的故事">
+<meta property="og:url" content="http://ptkin.com/story_of_gcc_llvm_clang/index.html">
+<meta property="og:site_name" content="ptblog">
+<meta property="og:description" content="在搞 OpenMP 做并行程序设计的时候由于需要在 Mac 上配置 OpenMP 环境，但是由于 Mac 使用的是 LLVM 编译器，而不是更多人熟知的 GCC 编译器，因此特地查了一些资料，补了一下对这块历史的了解。 本文将简要介绍 GCC、LLVM、Clang 的发展历程与对比等，内容主要参考了网上查询的资料，具体参考链接可见文末的参考链接部分。">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="http://7xrybf.com1.z0.glb.clouddn.com/20160613_00_gcc_llvm_clang.jpg">
+<meta property="og:image" content="http://7xrybf.com1.z0.glb.clouddn.com/20160613_01_simple_compiler.png">
+<meta property="og:image" content="http://7xrybf.com1.z0.glb.clouddn.com/20160613_02_retargetable_compiler.png">
+<meta property="og:image" content="http://7xrybf.com1.z0.glb.clouddn.com/20160613_02_retargetable_compiler.png">
+<meta property="og:image" content="http://7xrybf.com1.z0.glb.clouddn.com/20160613_00_gcc_llvm_clang.jpg">
+<meta property="og:updated_time" content="2018-05-31T05:30:21.192Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="GCC、LLVM、Clang的故事">
+<meta name="twitter:description" content="在搞 OpenMP 做并行程序设计的时候由于需要在 Mac 上配置 OpenMP 环境，但是由于 Mac 使用的是 LLVM 编译器，而不是更多人熟知的 GCC 编译器，因此特地查了一些资料，补了一下对这块历史的了解。 本文将简要介绍 GCC、LLVM、Clang 的发展历程与对比等，内容主要参考了网上查询的资料，具体参考链接可见文末的参考链接部分。">
+<meta name="twitter:image" content="http://7xrybf.com1.z0.glb.clouddn.com/20160613_00_gcc_llvm_clang.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '81814746bec8c1bf6b2fc39fe555ee19',
+      author: 'ptkin'
+    }
+  };
+</script>
+
+
+
+
+  <link rel="canonical" href="http://ptkin.com/story_of_gcc_llvm_clang/"/>
+
+
+  <title> GCC、LLVM、Clang的故事 | ptblog </title>
+</head>
+
+<body itemscope itemtype="//schema.org/WebPage" lang="en">
+
+  
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-77758254-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+
+
+
+
+  <div style="display: none;">
+    <script src="//s95.cnzz.com/z_stat.php?id=1259136479&web_id=1259136479" language="JavaScript"></script>
+  </div>
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="//schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">ptblog</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-wiki">
+          <a href="/wiki" rel="section">
+            
+            Wiki
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+            About
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup">
+ <span class="search-icon fa fa-search"></span>
+ <input type="text" id="local-search-input">
+ <div id="local-search-result"></div>
+ <span class="popup-btn-close">close</span>
+</div>
+
+
+    </div>
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="//schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                GCC、LLVM、Clang的故事
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">Posted on</span>
+            <time itemprop="dateCreated" datetime="2016-06-13T17:00:25+08:00" content="2016-06-13">
+              2016-06-13
+            </time>
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><img src="http://7xrybf.com1.z0.glb.clouddn.com/20160613_00_gcc_llvm_clang.jpg" alt=""></p>
+<p>在搞 OpenMP 做并行程序设计的时候由于需要在 Mac 上配置 OpenMP 环境，但是由于 Mac 使用的是 LLVM 编译器，而不是更多人熟知的 GCC 编译器，因此特地查了一些资料，补了一下对这块历史的了解。</p>
+<p>本文将简要介绍 <code>GCC</code>、<code>LLVM</code>、<code>Clang</code> 的发展历程与对比等，内容主要参考了网上查询的资料，具体参考链接可见文末的参考链接部分。</p>
+<a id="more"></a>
+<h1 id="GCC-GNU-Compiler-Collection"><a href="#GCC-GNU-Compiler-Collection" class="headerlink" title="GCC (GNU Compiler Collection)"></a>GCC (GNU Compiler Collection)</h1><p>在 GNU 出现之前，<code>Unix</code> 操作是收费的商用软件，因此在 1983 年，理查德·斯托曼提出 <code>GNU 计划</code>，希望发展出一套完整的开放源代码操作系统来取代 Unix，计划中的操作系统，名为 <code>GNU</code>。</p>
+<ol>
+<li>1985 年，理查德成立了自由软件基金会（Free Software Foundation, <code>FSF</code>），旨在执行 GNU 计划，开发更多的自由软件。</li>
+<li>1989 年，GNU 项目中的其他部份，如编辑器、编译器、shell 等都已经完成，独缺操作系统核心。</li>
+<li>1990 年，FSF 开始正式发展 <code>Hurd</code>，作为 GNU 项目中的操作系统。</li>
+<li>1991 年，<code>Linux</code> 出现。Linux 本身不属于 GNU 计划，但是使用了许多 GNU 中的软件。</li>
+</ol>
+<p>原本 GNU 计划中的操作系统 Hurd 至今未发布稳定版。但是 GNU 计划中的许多软件都被广泛使用，其中最出名的就是 <code>GCC</code> 编译器。</p>
+<h1 id="LLVM-Low-Level-Virtual-Machine"><a href="#LLVM-Low-Level-Virtual-Machine" class="headerlink" title="LLVM (Low Level Virtual Machine)"></a>LLVM (Low Level Virtual Machine)</h1><p>传统编译器的工作原理基本上都是三段式的，可以分为前端（<code>Frontend</code>）、优化器（<code>Optimizer</code>）、后端（<code>Backend</code>）。<strong>前端负责解析源代码</strong>，检查语法错误，并将其翻译为抽象的语法树（Abstract Syntax Tree）。<strong>优化器对这一中间代码进行优化</strong>，试图使代码更高效。<strong>后端则负责将优化器优化后的中间代码转换为目标机器代码</strong>，这一过程后端会最大化的利用目标机器的特殊指令，以提高代码的性能。</p>
+<p><img src="http://7xrybf.com1.z0.glb.clouddn.com/20160613_01_simple_compiler.png" alt=""></p>
+<p>这一模型的好处是，当我们要支持多种语言时，只需要添加多个前端就可以了。当需要支持多种目标机器时，只需要添加多个后端就可以了。对于中间的优化器，我们可以使用通用的中间代码。这大大降低了编译器的开发难度，使更多的开发人员可以参与进来。在这方面做的比较好的应该属Java和.NET虚拟机。</p>
+<p><img src="http://7xrybf.com1.z0.glb.clouddn.com/20160613_02_retargetable_compiler.png" alt=""></p>
+<p>GCC 也将三段式做的比较好，并且实现了很多前端，支持了很多语言。但是上述这些编译器的致命缺陷是，他们是一个完整的可执行文件，没有给其它语言的开发者提供代码重用的接口。即使 GCC 是开源的，但是源代码重用的难度也比较大。GCC 还可能存在编译速度较慢、优化效果不够、编译效果不理想等等问题，还因为许可证的问题，总之各种原因使得 GCC 无法满足 Apple 的要求。</p>
+<p>Apple（包括中后期的 NeXT）一直使用 GCC 作为官方的编译器。GCC 作为开源世界的编译器标准一直做得不错，但 Apple 对编译工具会提出更高的要求。</p>
+<p>一方面，是 Apple 对 Objective-C 语言（甚至后来对 C 语言）新增很多特性，但 GCC 开发者并不买 Apple 的帐，因此索性后来两者分成两条分支分别开发，这也造成 Apple 的编译器版本远落后于 GCC 的官方版本。另一方面，GCC 的代码耦合度太高，不好独立，而且越是后期的版本，代码质量越差，但 Apple 想做的很多功能（比如更好的 IDE 支持）需要模块化的方式来调用 GCC，但 GCC 一直不给做，从根本上限制了 LLVM-GCC 的开发。 所以，这种不和让 Apple 一直在寻找一个高效的、模块化的、协议更放松的开源替代品，于是 Apple 请来了编译器方面大神 Chris Lattner， LLVM 就这样产生了。</p>
+<p>LLVM (Low Level Virtual Machine) 提供了与编译器相关的支持，制定了 <code>LLVM IR</code> 这一中间代码表示语言，能够进行程序语言的编译期优化、链接优化、在线编译优化、代码生成。简而言之，可以作为多种语言编译器的后台来使用。</p>
+<p><img src="http://7xrybf.com1.z0.glb.clouddn.com/20160613_02_retargetable_compiler.png" alt=""></p>
+<h1 id="Clang"><a href="#Clang" class="headerlink" title="Clang"></a>Clang</h1><p>原本的 LLVM 只是作为一个中间的优化器与最后生成机器代码的后端，可以接入各种不同的编译器前端（例如 GCC）成为一个完整的编译器。但是 GCC 系统庞大而笨重，而 Apple 大量使用的 Objective-C 在 GCC 中优先级很低。此外 GCC 作为一个纯粹的编译系统，与 IDE 配合得很差。加之许可证方面的要求，Apple 无法使用 LLVM 继续改进 GCC 的代码质量。于是，Apple 决定从零开始写 C、C++、Objective-C 语言的前端 Clang，完全替代掉 GCC。</p>
+<p>Clang 只支持 C、C++ 和 Objective-C 三种 C 家族语言。2007 年开始开发，C 编译器最早完成，到 2009 年时，Objective-C 编译器已经完全可以用于生产环境。</p>
+<p>Clang 重要的特性包括编译快速、占内存少、代码质量比 GCC 高等，而且对于用户犯下的错误，也能够更准确地给出建议（例如彩色错误提示指出具体错误、根据语境提出可能的替代方案）。 而同时又因为Clang是高度模块化的一个前端，很容易实现代码的高度重用</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p><img src="http://7xrybf.com1.z0.glb.clouddn.com/20160613_00_gcc_llvm_clang.jpg" alt=""></p>
+<ol>
+<li><p><code>GCC</code> = <code>GCC Parser</code> + <code>GCC Optimizer</code> + <code>GCC Code Gendrater</code></p>
+</li>
+<li><p><code>LLVM-GCC</code> = <code>GCC Parser</code> + <code>LLVM Optimizer</code> + <code>LLVM Code Gendrater</code></p>
+</li>
+<li><p><code>LLVM Compiler</code> = <code>Clang Parser</code> + <code>LLVM Optimizer</code> + <code>LLVM Code Gendrater</code></p>
+</li>
+</ol>
+<h1 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h1><p>最后贴一些参考链接，有兴趣可以仔细研究：</p>
+<blockquote>
+<p><strong>OSX 的历史进程（包括 LLVM）</strong></p>
+<ul>
+<li><a href="http://kb.cnblogs.com/page/114879/" target="_blank" rel="noopener">Mac OS X 背后的故事</a></li>
+</ul>
+<p><strong>GCC 与 LLVM 等编译器</strong></p>
+<ul>
+<li><a href="http://www.cnblogs.com/wfwenchao/p/5543595.html" target="_blank" rel="noopener">c 各种编译器（gcc clang） - WFApple</a></li>
+<li><a href="http://www.cnblogs.com/ydhliphonedev/archive/2012/08/29/2661726.html" target="_blank" rel="noopener">XCode编译器介绍</a></li>
+<li><a href="http://lionelliu.com/2013/compare-llvm-gcc.html" target="_blank" rel="noopener">Lionel Liu | LLVM和GCC的区别</a></li>
+<li><a href="http://gcc.gnu.org/wiki/ClangDiagnosticsComparison" target="_blank" rel="noopener">Comparison of Diagnostics between GCC and Clang</a></li>
+<li><a href="http://clang.llvm.org/comparison.html" target="_blank" rel="noopener">Comparing clang to other open source compilers</a></li>
+</ul>
+</blockquote>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Clang/" rel="tag">#Clang</a>
+          
+            <a href="/tags/Compiler/" rel="tag">#Compiler</a>
+          
+            <a href="/tags/GCC/" rel="tag">#GCC</a>
+          
+            <a href="/tags/LLVM/" rel="tag">#LLVM</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/parallel_programming_mpi/" rel="next" title="并行程序设计(1) MPI">
+                <i class="fa fa-chevron-left"></i> 并行程序设计(1) MPI
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/parallel_programming_openmp/" rel="prev" title="并行程序设计(2) OpenMP">
+                并行程序设计(2) OpenMP <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="//schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpg"
+               alt="ptkin" />
+          <p class="site-author-name" itemprop="name">ptkin</p>
+          <p class="site-description motion-element" itemprop="description">Do it! Finish it! Now!</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">19</span>
+              <span class="site-state-item-name">posts</span>
+            </a>
+          </div>
+
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">41</span>
+                <span class="site-state-item-name">tags</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-block">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              Links
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://zhuanlan.zhihu.com/ai-insight" title="AI Insight" target="_blank">AI Insight</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://karpathy.github.io/" title="Andrej Karpathy blog" target="_blank">Andrej Karpathy blog</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://zh.mxnet.io/blog/" title="ApacheMXNet" target="_blank">ApacheMXNet</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://cenalulu.github.io/" title="cenalulu'S Tech Blog" target="_blank">cenalulu'S Tech Blog</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://chrisalbon.com/" title="Chris Albon" target="_blank">Chris Albon</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://blog.codinglabs.org/" title="CodingLabs" target="_blank">CodingLabs</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://colah.github.io/" title="colah's blog" target="_blank">colah's blog</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://distill.pub/" title="Distill" target="_blank">Distill</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://saicoco.github.io/" title="Fix you" target="_blank">Fix you</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.figotan.org/" title="FIGOTAN's Blog" target="_blank">FIGOTAN's Blog</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://freemind.pluskid.org/" title="Free Mind" target="_blank">Free Mind</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://charlesliuyx.github.io/" title="Go Further" target="_blank">Go Further</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://hahack.com/" title="HaHack" target="_blank">HaHack</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://handong1587.github.io" title="handong1587's blog" target="_blank">handong1587's blog</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://iceory.github.io/" title="iceory's blog" target="_blank">iceory's blog</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.codelast.com/" title="Intent & Focused" target="_blank">Intent & Focused</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://joshua881228.webfactional.com/blog_my-jumble-of-computer-vison_135/" title="JOSHUA'S BLOG" target="_blank">JOSHUA'S BLOG</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://juniperphoton.net/" title="JuniperPhoton's Blog" target="_blank">JuniperPhoton's Blog</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://closure11.com/" title="LHY's World" target="_blank">LHY's World</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://machinelearningmastery.com/" title="Machine Learning Mastery" target="_blank">Machine Learning Mastery</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.cnblogs.com/neopenx/" title="Physcalの大魔導書" target="_blank">Physcalの大魔導書</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://blog.csdn.net/abcjennifer" title="Rachel Zhang" target="_blank">Rachel Zhang</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://ruder.io/" title="Sebastian Ruder" target="_blank">Sebastian Ruder</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://zohead.com/" title="Soul Of Free Loop" target="_blank">Soul Of Free Loop</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://styletin.com/" title="Styletin" target="_blank">Styletin</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://timdettmers.com/" title="Tim Dettmers" target="_blank">Tim Dettmers</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.wildml.com/" title="WildML" target="_blank">WildML</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://dnc1994.com/" title="Wille" target="_blank">Wille</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://program-think.blogspot.com/" title="编程随想" target="_blank">编程随想</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://blog.csdn.net/red_stone1/" title="红色de石头" target="_blank">红色de石头</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://kenengba.com/" title="可能吧" target="_blank">可能吧</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://spaces.ac.cn/" title="科学空间" target="_blank">科学空间</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://coolshell.cn/" title="酷壳" target="_blank">酷壳</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://luolei.org/" title="罗磊" target="_blank">罗磊</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://blog.jimmylv.info/" title="吕立青的博客" target="_blank">吕立青的博客</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.hankcs.com/" title="码农场" target="_blank">码农场</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.fuzihao.org/blog/" title="切问录" target="_blank">切问录</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://perthcharles.github.io/" title="天赋 无与伦比的坚持" target="_blank">天赋 无与伦比的坚持</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://www.dandyweng.com/" title="翁天信" target="_blank">翁天信</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.52nlp.cn/" title="我爱自然语言处理" target="_blank">我爱自然语言处理</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://zhuanlan.zhihu.com/hsmyy" title="无痛的机器学习" target="_blank">无痛的机器学习</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.duanshishi.com/" title="小石头的码疯窝" target="_blank">小石头的码疯窝</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.read.org.cn/" title="战隼的学习探索" target="_blank">战隼的学习探索</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://ccjou.wordpress.com/" title="線代啟示錄" target="_blank">線代啟示錄</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#GCC-GNU-Compiler-Collection"><span class="nav-number">1.</span> <span class="nav-text">GCC (GNU Compiler Collection)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#LLVM-Low-Level-Virtual-Machine"><span class="nav-number">2.</span> <span class="nav-text">LLVM (Low Level Virtual Machine)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Clang"><span class="nav-number">3.</span> <span class="nav-text">Clang</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考链接"><span class="nav-number">5.</span> <span class="nav-text">参考链接</span></a></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2016 - 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ptkin</span>
+</div>
+
+
+        
+
+<div class="busuanzi-count">
+
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+
+  
+  
+</div>
+
+
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.0.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.0.2"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.2"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+  
+  
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length == 0) {
+       search_path = "search.xml";
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    function proceedsearch() {
+      $("body").append('<div class="popoverlay">').css('overflow', 'hidden');
+      $('.popup').toggle();
+
+    }
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+    'use strict';
+    $.ajax({
+        url: path,
+        dataType: "xml",
+        async: true,
+        success: function( xmlResponse ) {
+            // get the contents from search data
+            isfetched = true;
+            $('.popup').detach().appendTo('.header-inner');
+            var datas = $( "entry", xmlResponse ).map(function() {
+                return {
+                    title: $( "title", this ).text(),
+                    content: $("content",this).text(),
+                    url: $( "url" , this).text()
+                };
+            }).get();
+            var $input = document.getElementById(search_id);
+            var $resultContent = document.getElementById(content_id);
+            $input.addEventListener('input', function(){
+                var matchcounts = 0;
+                var str='<ul class=\"search-result-list\">';
+                var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+                $resultContent.innerHTML = "";
+                if (this.value.trim().length > 1) {
+                // perform local searching
+                datas.forEach(function(data) {
+                    var isMatch = false;
+                    var content_index = [];
+                    var data_title = data.title.trim().toLowerCase();
+                    var data_content = data.content.trim().replace(/<[^>]+>/g,"").toLowerCase();
+                    var data_url = data.url;
+                    var index_title = -1;
+                    var index_content = -1;
+                    var first_occur = -1;
+                    // only match artiles with not empty titles and contents
+                    if(data_title != '') {
+                        keywords.forEach(function(keyword, i) {
+                            index_title = data_title.indexOf(keyword);
+                            index_content = data_content.indexOf(keyword);
+                            if( index_title >= 0 || index_content >= 0 ){
+                                isMatch = true;
+								if (i == 0) {
+                                    first_occur = index_content;
+                                }
+                            } 
+							
+                        });
+                    }
+                    // show search results
+                    if (isMatch) {
+                        matchcounts += 1;
+                        str += "<li><a href='"+ data_url +"' class='search-result-title'>"+ data_title +"</a>";
+                        var content = data.content.trim().replace(/<[^>]+>/g,"");
+                        if (first_occur >= 0) {
+                            // cut out 100 characters
+                            var start = first_occur - 20;
+                            var end = first_occur + 80;
+                            if(start < 0){
+                                start = 0;
+                            }
+                            if(start == 0){
+                                end = 50;
+                            }
+                            if(end > content.length){
+                                end = content.length;
+                            }
+                            var match_content = content.substring(start, end);
+                            // highlight all keywords
+                            keywords.forEach(function(keyword){
+                                var regS = new RegExp(keyword, "gi");
+                                match_content = match_content.replace(regS, "<b class=\"search-keyword\">"+keyword+"</b>");
+                            });
+
+                            str += "<p class=\"search-result\">" + match_content +"...</p>"
+                        }
+                        str += "</li>";
+                    }
+                })};
+                str += "</ul>";
+                if (matchcounts == 0) { str = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>' }
+                if (keywords == "") { str = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>' }
+                $resultContent.innerHTML = str;
+            });
+            proceedsearch();
+        }
+    });}
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched == false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+
+    });
+
+    $('.popup-btn-close').click(function(e){
+      $('.popup').hide();
+      $(".popoverlay").remove();
+      $('body').css('overflow', '');
+    });
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+  </script>
+
+
+  
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+  </script>
+
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+      for (i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+    });
+  </script>
+  <script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+
+  
+
+  
+
+  
+
+
+</body>
+</html>

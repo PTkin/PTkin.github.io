@@ -1,0 +1,1447 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="C,MPI,Parallel," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.2" />
+
+
+
+
+
+
+<meta name="description" content="这学期上了一门《并行程序设计》，学习了并行程序设计的三种主流方式：分别是 MPI、OpenMP、Pthreads。于是打算写几篇笔记，对这门课学习的内容做一个简单的整理记录。 本文是第一篇，包括了并行程序设计的一些基础与 MPI 的基本使用方法，也包括了几个简单的算法的串行代码与使用 MPI 进行并行化之后的相应源码。">
+<meta name="keywords" content="C,MPI,Parallel">
+<meta property="og:type" content="article">
+<meta property="og:title" content="并行程序设计(1) MPI">
+<meta property="og:url" content="http://ptkin.com/parallel_programming_mpi/index.html">
+<meta property="og:site_name" content="ptblog">
+<meta property="og:description" content="这学期上了一门《并行程序设计》，学习了并行程序设计的三种主流方式：分别是 MPI、OpenMP、Pthreads。于是打算写几篇笔记，对这门课学习的内容做一个简单的整理记录。 本文是第一篇，包括了并行程序设计的一些基础与 MPI 的基本使用方法，也包括了几个简单的算法的串行代码与使用 MPI 进行并行化之后的相应源码。">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="http://7xrybf.com1.z0.glb.clouddn.com/20160610_0_parallel_programming.png">
+<meta property="og:image" content="http://7xrybf.com1.z0.glb.clouddn.com/20160610_01_hello.png">
+<meta property="og:image" content="http://7xrybf.com1.z0.glb.clouddn.com/20160610_02_hello_mpi_mpiexec.png">
+<meta property="og:image" content="http://7xrybf.com1.z0.glb.clouddn.com/20160610_03_hello_mpi_mpirun.png">
+<meta property="og:image" content="http://7xrybf.com1.z0.glb.clouddn.com/20160610_04_trap.png">
+<meta property="og:image" content="http://7xrybf.com1.z0.glb.clouddn.com/20160610_05_trap_mpi_n=1.png">
+<meta property="og:image" content="http://7xrybf.com1.z0.glb.clouddn.com/20160610_06_trap_mpi_n=24.png">
+<meta property="og:image" content="http://7xrybf.com1.z0.glb.clouddn.com/20160610_07_oe.png">
+<meta property="og:image" content="http://7xrybf.com1.z0.glb.clouddn.com/20160610_08_oe_mpi_n=1.png">
+<meta property="og:image" content="http://7xrybf.com1.z0.glb.clouddn.com/20160610_09_oe_mpi_n=12.png">
+<meta property="og:image" content="http://7xrybf.com1.z0.glb.clouddn.com/20160610_10_mvm_generate.png">
+<meta property="og:image" content="http://7xrybf.com1.z0.glb.clouddn.com/20160610_11_mvm.png">
+<meta property="og:image" content="http://7xrybf.com1.z0.glb.clouddn.com/20160610_12_mvm_mpi_n=1.png">
+<meta property="og:image" content="http://7xrybf.com1.z0.glb.clouddn.com/20160610_13_mvm_mpi_n=24.png">
+<meta property="og:updated_time" content="2018-05-31T05:30:21.201Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="并行程序设计(1) MPI">
+<meta name="twitter:description" content="这学期上了一门《并行程序设计》，学习了并行程序设计的三种主流方式：分别是 MPI、OpenMP、Pthreads。于是打算写几篇笔记，对这门课学习的内容做一个简单的整理记录。 本文是第一篇，包括了并行程序设计的一些基础与 MPI 的基本使用方法，也包括了几个简单的算法的串行代码与使用 MPI 进行并行化之后的相应源码。">
+<meta name="twitter:image" content="http://7xrybf.com1.z0.glb.clouddn.com/20160610_0_parallel_programming.png">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '81814746bec8c1bf6b2fc39fe555ee19',
+      author: 'ptkin'
+    }
+  };
+</script>
+
+
+
+
+  <link rel="canonical" href="http://ptkin.com/parallel_programming_mpi/"/>
+
+
+  <title> 并行程序设计(1) MPI | ptblog </title>
+</head>
+
+<body itemscope itemtype="//schema.org/WebPage" lang="en">
+
+  
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-77758254-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+
+
+
+
+  <div style="display: none;">
+    <script src="//s95.cnzz.com/z_stat.php?id=1259136479&web_id=1259136479" language="JavaScript"></script>
+  </div>
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="//schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">ptblog</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-wiki">
+          <a href="/wiki" rel="section">
+            
+            Wiki
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+            About
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup">
+ <span class="search-icon fa fa-search"></span>
+ <input type="text" id="local-search-input">
+ <div id="local-search-result"></div>
+ <span class="popup-btn-close">close</span>
+</div>
+
+
+    </div>
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="//schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                并行程序设计(1) MPI
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">Posted on</span>
+            <time itemprop="dateCreated" datetime="2016-06-10T13:24:53+08:00" content="2016-06-10">
+              2016-06-10
+            </time>
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><img src="http://7xrybf.com1.z0.glb.clouddn.com/20160610_0_parallel_programming.png" alt=""></p>
+<p>这学期上了一门《并行程序设计》，学习了并行程序设计的三种主流方式：分别是 <code>MPI</code>、<code>OpenMP</code>、<code>Pthreads</code>。于是打算写几篇笔记，对这门课学习的内容做一个简单的整理记录。</p>
+<p>本文是第一篇，包括了并行程序设计的一些基础与 MPI 的基本使用方法，也包括了几个简单的算法的串行代码与使用 MPI 进行并行化之后的相应源码。</p>
+<a id="more"></a>
+<h1 id="并行程序设计基础"><a href="#并行程序设计基础" class="headerlink" title="并行程序设计基础"></a>并行程序设计基础</h1><p><strong>并行化的两种思路</strong></p>
+<ol>
+<li>任务并行</li>
+<li>数据并行</li>
+</ol>
+<p><strong>两种主要的并行系统</strong></p>
+<ol>
+<li>共享内存系统 (Pthreads, OpenMP)</li>
+<li>分布式内存系统 (MPI)</li>
+</ol>
+<p><strong>名词区分</strong></p>
+<ol>
+<li>并行 (parallel)</li>
+<li>并发 (cocurrent)</li>
+<li>分布式 (distributed)</li>
+<li>并发计算 (cocurrent computing)</li>
+<li>分布式计算 (distributed computing)</li>
+</ol>
+<p><strong>冯诺依曼瓶颈 (Von Neumann Bottleneck)</strong></p>
+<ol>
+<li>指 CPU (包括算术逻辑单元 ALU 和 控制单元) 和主存的分离。</li>
+<li>解决措施包括：<ol>
+<li>缓存 <ul>
+<li>caching，一般指 CPU 中的 cache</li>
+<li>hit 和 miss</li>
+<li>注意 write-through cache 和 write-back cache 的区别</li>
+<li>cacha 映射方式有 全相联(full associative)、直接相联 (directed mapped)、n路组相联(n-way set associated)</li>
+<li>替换策略常用 LRU (least recently used)</li>
+</ul>
+</li>
+<li>虚拟内存<ul>
+<li>交换空间 (swap space)</li>
+<li>页 (page)</li>
+<li>转译后备缓冲区 (Translation-Lookaside Buffer, TLB) ：页表，类似于 cache</li>
+<li>page fault：类似于miss</li>
+<li>一般使用 write-back</li>
+</ul>
+</li>
+<li>指令级并行<ul>
+<li>Instruction-Level parallelism, ILP</li>
+<li>一般有两种实现：流水线、多发射</li>
+<li>多发射分为静态多发射和动态多发射，需要预测 (speculation) 技术</li>
+</ul>
+</li>
+</ol>
+</li>
+</ol>
+<p><strong>SIMD 系统</strong></p>
+<p>单指令多数据流 SIMD（single instruction, multiple data）</p>
+<p><strong>MIMD 系统</strong></p>
+<p>多指令多数据流 SIMD（multiple instruction, multiple data）</p>
+<p><strong>性能</strong></p>
+<ol>
+<li><p>几个符号：</p>
+<ul>
+<li><code>加速比</code> $ S $ (speedup)</li>
+<li><code>运行时间</code> $ T $ (time)</li>
+<li><code>核数</code> $ p $</li>
+<li><code>效率</code> $ E $ (efficiency)</li>
+</ul>
+</li>
+<li><p>加速比 $ S $</p>
+<ul>
+<li>$ S = \frac{T_{串行}}{T_{并行}} $</li>
+</ul>
+</li>
+<li><p>效率 $ E $</p>
+<ul>
+<li>$ E = \frac{S}{p} = \frac{T_{串行}}{p \cdot T_{并行}} $</li>
+</ul>
+</li>
+</ol>
+<p><strong>Foster 方法</strong></p>
+<ol>
+<li><p>划分 (partitioning)</p>
+<p> 识别出可以并行执行的任务，划分指令和数据</p>
+</li>
+<li><p>通信 (communication)</p>
+<p> 确定上一步识别出来的任务之间需要的通信</p>
+</li>
+<li><p>凝聚或者聚合 (agglomeration or aggregation)</p>
+<p> 合并需要合并的任务和通信等</p>
+</li>
+<li><p>分配 (mapping)</p>
+<p> 将上一步聚合好的任务分配到进程/线程中（要求通信量尽量小，负载尽量均衡）</p>
+</li>
+</ol>
+<p><strong>并行程序设计三种主流方式</strong></p>
+<ol>
+<li><p>消息传递接口 MPI</p>
+<p> (Message-Passing Interface)，适用于分布式内存系统。</p>
+</li>
+<li><p>OpenMP</p>
+<p> 适用于共享内存系统。</p>
+</li>
+<li><p>POSIX 线程</p>
+<p> Pthreads (POSIX threads)，适用于共享内存系统。</p>
+</li>
+</ol>
+<h1 id="MPI-基础"><a href="#MPI-基础" class="headerlink" title="MPI 基础"></a>MPI 基础</h1><p>消息传递接口 MPI (Message-Passing Interface)，适用于分布式内存系统。</p>
+<h2 id="MPI-程序大体结构"><a href="#MPI-程序大体结构" class="headerlink" title="MPI 程序大体结构"></a>MPI 程序大体结构</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// something like header files</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;mpi.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span>* argv[])</span> </span>&#123;</span><br><span class="line">	<span class="comment">// code without MPI</span></span><br><span class="line">	</span><br><span class="line">	MPI_Init(&amp;argc, &amp;argv);</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// code with MPI</span></span><br><span class="line">	</span><br><span class="line">	MPI_Finalize();</span><br><span class="line"></span><br><span class="line">	<span class="comment">// code without MPI</span></span><br><span class="line">	</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="函数"><a href="#函数" class="headerlink" title="函数"></a>函数</h2><ul>
+<li><p>通信子(communicator)</p>
+<p>  一组可以互发消息的进程的集合</p>
+</li>
+<li><p>函数</p>
+  <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 获取通信类型 comm 的进程数保存到 comm_sz_p</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">MPI_Comm_size</span><span class="params">(MPI_Comm comm, <span class="keyword">int</span> *comm_sz_p)</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"><span class="comment">// 获取当前正在调用的进程在通信子中的进程号保存到 my_rank_p</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">MPI_Comm_rank</span><span class="params">(MPI_Comm comm, <span class="keyword">int</span> *my_rank_p)</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"><span class="comment">// 向 dest 发送消息</span></span></span><br><span class="line"><span class="function"><span class="comment">// MPI 标准允许 MPI_Send 以两种方式实现：</span></span></span><br><span class="line"><span class="function"><span class="comment">//   1. 将消息复制到 MPI 设置的缓冲区，然后返回</span></span></span><br><span class="line"><span class="function"><span class="comment">//   2. 直到对应的接收方调用 MPI_Recv 之前都阻塞</span></span></span><br><span class="line"><span class="function"><span class="comment">// 但是这样依赖于 MPI 提供的缓冲机制不安全，</span></span></span><br><span class="line"><span class="function"><span class="comment">// 因为很多 MPI 函数设置了一个阈值，超过则选择阻塞模式，否则选择缓冲模式。</span></span></span><br><span class="line"><span class="function"><span class="comment">// 这表示我们无法保证程序在某个时刻选择哪种模式。</span></span></span><br><span class="line"><span class="function"><span class="comment">// 因此 MPI 提供了另一个函数 MPI_Ssend（见下文）</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">MPI_Send</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">	<span class="keyword">void</span>*        send_buf_p,    <span class="comment">// 指向存放消息内容的缓冲区的指针</span></span></span></span><br><span class="line"><span class="function"><span class="params">	<span class="keyword">int</span>          send_buf_size, <span class="comment">// 消息的大小</span></span></span></span><br><span class="line"><span class="function"><span class="params">	MPI_Datatype send_buf_type, <span class="comment">// 消息的数据类型(由 MPI 定义的数据类型)</span></span></span></span><br><span class="line"><span class="function"><span class="params">	<span class="keyword">int</span>          dest,          <span class="comment">// 接收消息的进程号</span></span></span></span><br><span class="line"><span class="function"><span class="params">	<span class="keyword">int</span>          send_tag,      <span class="comment">// 非负 int，用于区分内容相同的消息</span></span></span></span><br><span class="line"><span class="function"><span class="params">	MPI_Comm     communicator   <span class="comment">// 通信子，指定通信范围</span></span></span></span><br><span class="line"><span class="function"><span class="params">	)</span></span>;</span><br><span class="line">	</span><br><span class="line"><span class="comment">// 从 src 接收消息</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">MPI_Recv</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">	<span class="keyword">void</span>*        recv_buf_p,    <span class="comment">// 指向存放接收的消息内容的缓冲区的指针</span></span></span></span><br><span class="line"><span class="function"><span class="params">	<span class="keyword">int</span>          recv_buf_size, <span class="comment">// 缓冲区的大小</span></span></span></span><br><span class="line"><span class="function"><span class="params">	MPI_Datatype recv_buf_type, <span class="comment">// 消息的数据类型(由 MPI 定义的数据类型)</span></span></span></span><br><span class="line"><span class="function"><span class="params">	<span class="keyword">int</span>          src,           <span class="comment">// 发送消息的进程号</span></span></span></span><br><span class="line"><span class="function"><span class="params">	<span class="keyword">int</span>          recv_tag,      <span class="comment">// 非负 int，用于区分内容相同的消息</span></span></span></span><br><span class="line"><span class="function"><span class="params">	MPI_Comm     communicator,  <span class="comment">// 通信子，指定通信范围</span></span></span></span><br><span class="line"><span class="function"><span class="params">	MPI_Status*  status_p       <span class="comment">// 通常忽略，使用 MPI_STATUS_IGNORE</span></span></span></span><br><span class="line"><span class="function"><span class="params">	)</span></span>;</span><br><span class="line">	</span><br><span class="line"><span class="comment">// 安全发送消息，参数与 MPI_Send 相同。</span></span><br><span class="line"><span class="comment">// 保证了直到对应的接收方开始接受（调用 MPI_Recv）前，发送端一直阻塞。</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">MPI_Ssend</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">	<span class="keyword">void</span>*        send_buf_p,</span></span></span><br><span class="line"><span class="function"><span class="params">	<span class="keyword">int</span>          send_buf_size,</span></span></span><br><span class="line"><span class="function"><span class="params">	MPI_Datatype send_buf_type,</span></span></span><br><span class="line"><span class="function"><span class="params">	<span class="keyword">int</span>          dest,</span></span></span><br><span class="line"><span class="function"><span class="params">	<span class="keyword">int</span>          send_tag,</span></span></span><br><span class="line"><span class="function"><span class="params">	MPI_Comm     communicator</span></span></span><br><span class="line"><span class="function"><span class="params">	)</span></span>;</span><br><span class="line">	</span><br><span class="line"><span class="comment">// MPI 提供的调度通信的方法（可防止手动调度造成的死锁等问题）</span></span><br><span class="line"><span class="comment">// 调用时会分别执行一次阻塞式消息发送和一次消息接收</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">MPI_Sendrecv</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">	<span class="keyword">void</span>*        send_buf_p,</span></span></span><br><span class="line"><span class="function"><span class="params">	<span class="keyword">int</span>          send_buf_size,</span></span></span><br><span class="line"><span class="function"><span class="params">	MPI_Datatype send_buf_type,</span></span></span><br><span class="line"><span class="function"><span class="params">	<span class="keyword">int</span>          dest,</span></span></span><br><span class="line"><span class="function"><span class="params">	<span class="keyword">int</span>          send_tag,</span></span></span><br><span class="line"><span class="function"><span class="params">	</span></span></span><br><span class="line"><span class="function"><span class="params">	<span class="keyword">void</span>*        recv_buf_p,</span></span></span><br><span class="line"><span class="function"><span class="params">	<span class="keyword">int</span>          recv_buf_size,</span></span></span><br><span class="line"><span class="function"><span class="params">	MPI_Datatype recv_buf_type,</span></span></span><br><span class="line"><span class="function"><span class="params">	<span class="keyword">int</span>          src,</span></span></span><br><span class="line"><span class="function"><span class="params">	<span class="keyword">int</span>          recv_tag,</span></span></span><br><span class="line"><span class="function"><span class="params">	</span></span></span><br><span class="line"><span class="function"><span class="params">	MPI_Comm     communicator,</span></span></span><br><span class="line"><span class="function"><span class="params">	MPI_Status*  status_p</span></span></span><br><span class="line"><span class="function"><span class="params">)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 如果 src 和 dest 使用的是同一个缓冲区，那么可以使用 MPI_Sendrecv_replace 代替 MPI_Sendrecv</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">MPI_Sendrecv_replace</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">	<span class="keyword">void</span>*        buf_p,</span></span></span><br><span class="line"><span class="function"><span class="params">	<span class="keyword">int</span>          buf_size,</span></span></span><br><span class="line"><span class="function"><span class="params">	MPI_Datatype buf_type,</span></span></span><br><span class="line"><span class="function"><span class="params">	</span></span></span><br><span class="line"><span class="function"><span class="params">	<span class="keyword">int</span>          dest,</span></span></span><br><span class="line"><span class="function"><span class="params">	<span class="keyword">int</span>          send_tag,</span></span></span><br><span class="line"><span class="function"><span class="params">	<span class="keyword">int</span>          src,</span></span></span><br><span class="line"><span class="function"><span class="params">	<span class="keyword">int</span>          recv_tag,</span></span></span><br><span class="line"><span class="function"><span class="params">	</span></span></span><br><span class="line"><span class="function"><span class="params">	MPI_Comm     communicator,</span></span></span><br><span class="line"><span class="function"><span class="params">	MPI_Status*  status_p</span></span></span><br><span class="line"><span class="function"><span class="params">)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 广播（注意与 MPI_Scatter 的区别）</span></span><br><span class="line"><span class="comment">// 从 src 向同一通信子内的所有进程广播消息</span></span><br><span class="line"><span class="comment">// 消息内容来自 src 的send_buf，将保存在每个进程的同一缓冲区 send_buf 中</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">MPI_Bcast</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">	<span class="keyword">void</span>*        send_buf_p,</span></span></span><br><span class="line"><span class="function"><span class="params">	<span class="keyword">int</span>          send_buf_size,</span></span></span><br><span class="line"><span class="function"><span class="params">	MPI_Datatype send_buf_type,</span></span></span><br><span class="line"><span class="function"><span class="params">	<span class="keyword">int</span>          src,</span></span></span><br><span class="line"><span class="function"><span class="params">	MPI_Comm     communicator</span></span></span><br><span class="line"><span class="function"><span class="params">	)</span></span>;</span><br><span class="line">	</span><br><span class="line"><span class="comment">// 散射（注意与 MPI_Bcast 的区别）</span></span><br><span class="line"><span class="comment">// 从 src 向同一通信子内的所有进程散射消息</span></span><br><span class="line"><span class="comment">// 消息内容来自 src 的 send_buf（每条消息内容大小为 send_buf_size），并保存在每个进程的 recv_buf 中</span></span><br><span class="line"><span class="comment">//   例如第 0 号进程得到第一个 send_buf_size 大小的内容；</span></span><br><span class="line"><span class="comment">//   例如第 1 号进程得到第二个 send_buf_size 大小的内容；</span></span><br><span class="line"><span class="comment">//   ...</span></span><br><span class="line"><span class="comment">// 特别注意：这里的 send_buf_size 应该是发送的每条消息的大小，而不是所有消息的总大小</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">MPI_Scatter</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">	<span class="keyword">void</span>*        send_buf_p,</span></span></span><br><span class="line"><span class="function"><span class="params">	<span class="keyword">int</span>          send_buf_size,</span></span></span><br><span class="line"><span class="function"><span class="params">	MPI_Datatype send_buf_type,</span></span></span><br><span class="line"><span class="function"><span class="params">	</span></span></span><br><span class="line"><span class="function"><span class="params">	<span class="keyword">void</span>*        recv_buf_p,</span></span></span><br><span class="line"><span class="function"><span class="params">	<span class="keyword">int</span>          recv_buf_size,</span></span></span><br><span class="line"><span class="function"><span class="params">	MPI_Datatype recv_buf_type,</span></span></span><br><span class="line"><span class="function"><span class="params">	</span></span></span><br><span class="line"><span class="function"><span class="params">	<span class="keyword">int</span>          src,</span></span></span><br><span class="line"><span class="function"><span class="params">	MPI_Comm     communicator	</span></span></span><br><span class="line"><span class="function"><span class="params">	)</span></span>;</span><br><span class="line">	</span><br><span class="line"><span class="comment">// 聚集</span></span><br><span class="line"><span class="comment">// 同一通信子内的所有进程向 dest 发送消息</span></span><br><span class="line"><span class="comment">// 消息内容来自各自的 send_buf，并保存在 dest 的 recv_buf 中</span></span><br><span class="line"><span class="comment">// 特别注意：这里的 recv_buf_size 应该是接收的每条消息的大小，而不是所有消息的总大小</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">MPI_Gather</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">	<span class="keyword">void</span>*        send_buf_p,</span></span></span><br><span class="line"><span class="function"><span class="params">	<span class="keyword">int</span>          send_buf_size,</span></span></span><br><span class="line"><span class="function"><span class="params">	MPI_Datatype send_buf_type,</span></span></span><br><span class="line"><span class="function"><span class="params">	</span></span></span><br><span class="line"><span class="function"><span class="params">	<span class="keyword">void</span>*        recv_buf_p,</span></span></span><br><span class="line"><span class="function"><span class="params">	<span class="keyword">int</span>          recv_buf_size,</span></span></span><br><span class="line"><span class="function"><span class="params">	MPI_Datatype recv_buf_type,</span></span></span><br><span class="line"><span class="function"><span class="params">	</span></span></span><br><span class="line"><span class="function"><span class="params">	<span class="keyword">int</span>          dest,</span></span></span><br><span class="line"><span class="function"><span class="params">	MPI_Comm     communicator	</span></span></span><br><span class="line"><span class="function"><span class="params">	)</span></span>;</span><br><span class="line">	</span><br><span class="line"><span class="comment">// 全聚集</span></span><br><span class="line"><span class="comment">// 同一通信子内的所有进程聚集消息并在各自进程保存一份拷贝</span></span><br><span class="line"><span class="comment">// 消息内容来自各自的 send_buf，并保存在各自的 recv_buf 中</span></span><br><span class="line"><span class="comment">// 特别注意：这里的 send_buf_size 与 recv_buf_size 应该都是每条消息的大小，而不是所有消息的总大小</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">MPI_Allgather</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">	<span class="keyword">void</span>*        send_buf_p,</span></span></span><br><span class="line"><span class="function"><span class="params">	<span class="keyword">int</span>          send_buf_size,</span></span></span><br><span class="line"><span class="function"><span class="params">	MPI_Datatype send_buf_type,</span></span></span><br><span class="line"><span class="function"><span class="params">	</span></span></span><br><span class="line"><span class="function"><span class="params">	<span class="keyword">void</span>*        recv_buf_p,</span></span></span><br><span class="line"><span class="function"><span class="params">	<span class="keyword">int</span>          recv_buf_size,</span></span></span><br><span class="line"><span class="function"><span class="params">	MPI_Datatype recv_buf_type,</span></span></span><br><span class="line"><span class="function"><span class="params">	</span></span></span><br><span class="line"><span class="function"><span class="params">	MPI_Comm     communicator	</span></span></span><br><span class="line"><span class="function"><span class="params">	)</span></span>;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<ul>
+<li><p>消息匹配</p>
+<p>  一般来说，除了满足 <code>comm</code>、<code>tag</code>、接收方和发送方的进程号分别对应上之外，还需要满足消息的数据类型 <code>msg_type</code> 相同，且接收方的缓冲区大小大于发送的消息大小，消息才可以正常匹配。</p>
+<p>  注意这里 MPI 提供了两个变量 <code>MPI_ANY_SOURCE</code> 和 <code>MPT_ANY_TAG</code>，分别用于表示接收 <strong>任何发送方进程</strong> 的消息、接收 <strong>任何 tag</strong> 的消息。</p>
+</li>
+</ul>
+<h2 id="编译与运行"><a href="#编译与运行" class="headerlink" title="编译与运行"></a>编译与运行</h2><ul>
+<li><p>编译（以文件 <code>mpi_hello.c</code> 为例）</p>
+<pre><code>mpicc -g -Wall -O2 -o mpi_hello mpi_hello.c
+</code></pre><ul>
+<li><code>-g</code> 表示允许使用调试器；</li>
+<li><code>-Wall</code> 表示显示警告</li>
+<li><code>-O2</code> 表示启动编译器优化（原理可网上搜索）</li>
+<li><code>-o</code> 后跟着输出的可执行文件名</li>
+</ul>
+</li>
+<li><p>运行（以可执行文件 <code>mpi_hello</code> 为例）</p>
+<pre><code>mpiexec -n &lt;number of processes&gt; ./mpi_hello
+</code></pre><ul>
+<li>或者使用命令 <code>mpirun</code> 表示快速执行，即不开启 <code>mpdboot</code> 守护进程</li>
+<li><code>-n</code> 后跟着执行的进程数</li>
+</ul>
+</li>
+</ul>
+<h1 id="MPI-实例"><a href="#MPI-实例" class="headerlink" title="MPI 实例"></a>MPI 实例</h1><p>下面将给出几个 C 语言运用 MPI 的实例，其中串行代码有的是直接使用 <a href="http://item.jd.com/11129425.html" target="_blank" rel="noopener">书本</a> 的例子，有的是自己写的算法实现。并行化部分参考了书本的并行化思路，由于只是为了实验 MPI，因此抛弃了原本比较全面但也比较臃肿的部分代码，但是保留了一些在实现过程中的一些辅助的代码等（例如注释掉的那些 printf）。代码示例包括：</p>
+<ol>
+<li>helloworld</li>
+<li>梯形积分法</li>
+<li>奇偶排序</li>
+<li>矩阵向量乘法</li>
+</ol>
+<p>代码的后面还给出了串行与并行代码运行结果的对比，注意有的截图是在本地机器（普通 PC）上跑的，有的截图是在天河二号（大概24个核所有）上面跑的；实验过程中尝试了各种不同的进程数进行详细对比，但这里只是为了说明代码成功并行化，所以截图只给出几个关键截图。</p>
+<p>个人实力有限，难免出现纰漏，敬请见谅，仅供参考。</p>
+<h1 id="MPI-实例之-helloworld"><a href="#MPI-实例之-helloworld" class="headerlink" title="MPI 实例之 helloworld"></a>MPI 实例之 helloworld</h1><h2 id="串行代码"><a href="#串行代码" class="headerlink" title="串行代码"></a>串行代码</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span> </span>&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"hello world"</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="并行代码"><a href="#并行代码" class="headerlink" title="并行代码"></a>并行代码</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;mpi.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span> <span class="params">()</span> </span>&#123;</span><br><span class="line">	MPI_Init(<span class="literal">NULL</span>, <span class="literal">NULL</span>);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">int</span> comm_sz;</span><br><span class="line">	<span class="keyword">int</span> my_rank;</span><br><span class="line">    <span class="keyword">char</span> message[<span class="number">100</span>];</span><br><span class="line"></span><br><span class="line">	MPI_Comm_size(MPI_COMM_WORLD, &amp;comm_sz); </span><br><span class="line">	MPI_Comm_rank(MPI_COMM_WORLD, &amp;my_rank); </span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span>(my_rank != <span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">sprintf</span>(message, <span class="string">"Greetings from process %d!"</span>,my_rank);</span><br><span class="line">        MPI_Send(message, <span class="built_in">strlen</span>(message) + <span class="number">1</span>, MPI_CHAR, <span class="number">0</span>, <span class="number">0</span>, MPI_COMM_WORLD);</span><br><span class="line">    &#125; </span><br><span class="line">    <span class="keyword">else</span> </span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">sprintf</span>(message, <span class="string">"Greetings from process %d!"</span>,my_rank);    	</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"%s\n"</span>, message);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt; comm_sz; i++) &#123;</span><br><span class="line">            MPI_Recv(message, <span class="number">100</span>, MPI_CHAR, i, <span class="number">0</span>, MPI_COMM_WORLD, MPI_STATUS_IGNORE);</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">"%s\n"</span>, message);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    MPI_Finalize();</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="结果对比"><a href="#结果对比" class="headerlink" title="结果对比"></a>结果对比</h2><ol>
+<li><p>本地串行结果</p>
+<p> <img src="http://7xrybf.com1.z0.glb.clouddn.com/20160610_01_hello.png" alt=""></p>
+</li>
+<li><p>本地并行结果 (使用 <code>mpiexec</code>)</p>
+<p> <img src="http://7xrybf.com1.z0.glb.clouddn.com/20160610_02_hello_mpi_mpiexec.png" alt=""></p>
+</li>
+<li><p>本地并行结果 (使用 <code>mpirun</code>)</p>
+<p> <img src="http://7xrybf.com1.z0.glb.clouddn.com/20160610_03_hello_mpi_mpirun.png" alt=""></p>
+</li>
+</ol>
+<h1 id="MPI-实例之-梯形积分法"><a href="#MPI-实例之-梯形积分法" class="headerlink" title="MPI 实例之 梯形积分法"></a>MPI 实例之 梯形积分法</h1><h2 id="串行代码-1"><a href="#串行代码-1" class="headerlink" title="串行代码"></a>串行代码</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* File:    trap.c</span></span><br><span class="line"><span class="comment"> * Purpose: Calculate definite integral using trapezoidal </span></span><br><span class="line"><span class="comment"> *          rule.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * Input:   a, b, n</span></span><br><span class="line"><span class="comment"> * Output:  Estimate of integral from a to b of f(x)</span></span><br><span class="line"><span class="comment"> *          using n trapezoids.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * Compile: gcc -g -Wall -o trap trap.c</span></span><br><span class="line"><span class="comment"> * Usage:   ./trap</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * Note:    The function f(x) is hardwired.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * IPP:     Section 3.2.1 (pp. 94 and ff.) and 5.2 (p. 216)</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;time.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">double</span> <span class="title">f</span><span class="params">(<span class="keyword">double</span> x)</span></span>;    <span class="comment">/* Function we're integrating */</span></span><br><span class="line"><span class="function"><span class="keyword">double</span> <span class="title">Trap</span><span class="params">(<span class="keyword">double</span> a, <span class="keyword">double</span> b, <span class="keyword">int</span> n, <span class="keyword">double</span> h)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">double</span>  integral;   <span class="comment">/* Store result in integral   */</span></span><br><span class="line">    <span class="keyword">double</span>  a, b;       <span class="comment">/* Left and right endpoints   */</span></span><br><span class="line">    <span class="keyword">int</span>     n;          <span class="comment">/* Number of trapezoids       */</span></span><br><span class="line">    <span class="keyword">double</span>  h;          <span class="comment">/* Height of trapezoids       */</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">double</span> start_time;</span><br><span class="line">    <span class="keyword">double</span> end_time;</span><br><span class="line"></span><br><span class="line">    a = <span class="number">-666</span>;</span><br><span class="line">    b =  <span class="number">666</span>;</span><br><span class="line">    n = <span class="number">2033333333</span>;</span><br><span class="line">    <span class="comment">// printf("Enter a, b, and n\n");</span></span><br><span class="line">    <span class="comment">// scanf("%lf", &amp;a);</span></span><br><span class="line">    <span class="comment">// scanf("%lf", &amp;b);</span></span><br><span class="line">    <span class="comment">// scanf("%d", &amp;n);</span></span><br><span class="line">    start_time = clock();</span><br><span class="line"></span><br><span class="line">    h = (b-a)/n;</span><br><span class="line">    integral = Trap(a, b, n, h);</span><br><span class="line"></span><br><span class="line">    end_time = clock();</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// printf("With n = %d trapezoids, our estimate\n", n);</span></span><br><span class="line">    <span class="comment">// printf("of the integral from %f to %f = %.15f\n",</span></span><br><span class="line">    <span class="comment">//    a, b, integral);</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"==========\na\t= %f\nb\t= %f\nn\t= %d\nret\t= %f\ntime\t= %f\n"</span>, </span><br><span class="line">            a, b, n, integral, (<span class="keyword">double</span>)(end_time - start_time) / CLOCKS_PER_SEC);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;  <span class="comment">/* main */</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/*------------------------------------------------------------------</span></span><br><span class="line"><span class="comment"> * Function:    Trap</span></span><br><span class="line"><span class="comment"> * Purpose:     Estimate integral from a to b of f using trap rule and</span></span><br><span class="line"><span class="comment"> *              n trapezoids</span></span><br><span class="line"><span class="comment"> * Input args:  a, b, n, h</span></span><br><span class="line"><span class="comment"> * Return val:  Estimate of the integral </span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">double</span> <span class="title">Trap</span><span class="params">(<span class="keyword">double</span> a, <span class="keyword">double</span> b, <span class="keyword">int</span> n, <span class="keyword">double</span> h)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">double</span> integral;</span><br><span class="line">    <span class="keyword">int</span> k;</span><br><span class="line"></span><br><span class="line">    integral = (f(a) + f(b))/<span class="number">2.0</span>;</span><br><span class="line">    <span class="keyword">for</span> (k = <span class="number">1</span>; k &lt;= n<span class="number">-1</span>; k++) &#123;</span><br><span class="line">      integral += f(a+k*h);</span><br><span class="line">    &#125;</span><br><span class="line">    integral = integral*h;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> integral;</span><br><span class="line">&#125;  <span class="comment">/* Trap */</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/*------------------------------------------------------------------</span></span><br><span class="line"><span class="comment"> * Function:    f</span></span><br><span class="line"><span class="comment"> * Purpose:     Compute value of function to be integrated</span></span><br><span class="line"><span class="comment"> * Input args:  x</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">double</span> <span class="title">f</span><span class="params">(<span class="keyword">double</span> x)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">double</span> return_val;</span><br><span class="line"></span><br><span class="line">    return_val = x*x;</span><br><span class="line">    <span class="keyword">return</span> return_val;</span><br><span class="line">&#125;  <span class="comment">/* f */</span></span><br></pre></td></tr></table></figure>
+<h2 id="并行代码-1"><a href="#并行代码-1" class="headerlink" title="并行代码"></a>并行代码</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta"># <span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta"># <span class="meta-keyword">include</span> <span class="meta-string">&lt;mpi.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">double</span> <span class="title">f</span><span class="params">(<span class="keyword">double</span> x)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> x * x;</span><br><span class="line">&#125; </span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">double</span> <span class="title">Trap</span><span class="params">(<span class="keyword">double</span> a, <span class="keyword">double</span> b, <span class="keyword">int</span> n, <span class="keyword">double</span> h)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">double</span> ret = (f(a) + f(b)) / <span class="number">2.0</span>;</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= n - <span class="number">1</span>; ++i)</span><br><span class="line">		ret += f(a + h * i);</span><br><span class="line">	<span class="keyword">return</span> ret * h;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span>    my_rank;</span><br><span class="line">    <span class="keyword">int</span>    comm_sz;</span><br><span class="line">    <span class="keyword">double</span> start_time;</span><br><span class="line">    <span class="keyword">double</span> end_time;</span><br><span class="line"></span><br><span class="line">    MPI_Init(<span class="literal">NULL</span>, <span class="literal">NULL</span>);</span><br><span class="line">    MPI_Comm_rank(MPI_COMM_WORLD, &amp;my_rank);</span><br><span class="line">    MPI_Comm_size(MPI_COMM_WORLD, &amp;comm_sz);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">int</span>    n;</span><br><span class="line">    <span class="keyword">double</span> a, b, h;</span><br><span class="line"></span><br><span class="line">    a = <span class="number">-666</span>;</span><br><span class="line">    b =  <span class="number">666</span>;</span><br><span class="line">    n = <span class="number">2033333333</span>;</span><br><span class="line">    h = (b - a) / n;</span><br><span class="line">    </span><br><span class="line">    start_time = MPI_Wtime();</span><br><span class="line">    <span class="keyword">double</span> local_n   = n * <span class="number">1.0</span> / comm_sz;</span><br><span class="line">    <span class="keyword">double</span> local_a   =       a + local_n * h * my_rank;</span><br><span class="line">    <span class="keyword">double</span> local_b   = local_a + local_n * h;</span><br><span class="line">    <span class="keyword">double</span> local_ret = Trap(local_a, local_b, local_n, h);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">double</span> ret;</span><br><span class="line">    <span class="keyword">if</span> (<span class="number">0</span> != my_rank) &#123; </span><br><span class="line">        MPI_Send(&amp;local_ret, <span class="number">1</span>, MPI_DOUBLE, <span class="number">0</span>, <span class="number">100</span>, MPI_COMM_WORLD); </span><br><span class="line">    &#125; </span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">        ret = local_ret;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt; comm_sz; ++i) &#123;</span><br><span class="line">        	MPI_Recv(&amp;local_ret, <span class="number">1</span>, MPI_DOUBLE, i, <span class="number">100</span>, MPI_COMM_WORLD, MPI_STATUS_IGNORE);</span><br><span class="line">         	ret += local_ret;</span><br><span class="line">      	&#125;</span><br><span class="line">   	&#125; </span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (<span class="number">0</span> == my_rank) &#123;</span><br><span class="line">    	end_time = MPI_Wtime();</span><br><span class="line">    	<span class="built_in">printf</span>(<span class="string">"==========\na\t= %f\nb\t= %f\nn\t= %d\nret\t= %f\ntime\t= %f\n"</span>, </span><br><span class="line">    		a, b, n, ret, end_time - start_time);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    MPI_Finalize();</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="结果对比-1"><a href="#结果对比-1" class="headerlink" title="结果对比"></a>结果对比</h2><ol>
+<li><p>天河二号串行结果</p>
+<p> <img src="http://7xrybf.com1.z0.glb.clouddn.com/20160610_04_trap.png" alt=""></p>
+</li>
+<li><p>天河二号并行结果 (n = 1)</p>
+<p> <img src="http://7xrybf.com1.z0.glb.clouddn.com/20160610_05_trap_mpi_n=1.png" alt=""></p>
+</li>
+<li><p>天河二号并行结果 (n = 24)</p>
+<p> <img src="http://7xrybf.com1.z0.glb.clouddn.com/20160610_06_trap_mpi_n=24.png" alt=""></p>
+</li>
+<li><p>天河二号多次运行结果对比</p>
+</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>编号</th>
+<th>进程数</th>
+<th>运行时间(运行三次平均数)</th>
+<th>加速比</th>
+<th>效率</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>串行</td>
+<td>12.700</td>
+<td>\</td>
+<td>\ </td>
+</tr>
+<tr>
+<td>2</td>
+<td>n=1</td>
+<td>6.194</td>
+<td>\</td>
+<td>100%</td>
+</tr>
+<tr>
+<td>3</td>
+<td>n=2</td>
+<td>3.203</td>
+<td>1.934</td>
+<td>96.7%</td>
+</tr>
+<tr>
+<td>4</td>
+<td>n=4</td>
+<td>1.683</td>
+<td>3.680</td>
+<td>92.0%</td>
+</tr>
+<tr>
+<td>5</td>
+<td>n=8</td>
+<td>0.905</td>
+<td>6.844</td>
+<td>85.6%</td>
+</tr>
+<tr>
+<td>6</td>
+<td>n=12</td>
+<td>0.613</td>
+<td>10.104</td>
+<td>84.2%</td>
+</tr>
+<tr>
+<td>7</td>
+<td>n=16</td>
+<td>0.464</td>
+<td>13.349</td>
+<td>83.4%</td>
+</tr>
+<tr>
+<td>8</td>
+<td>n=20</td>
+<td>0.384</td>
+<td>16.130</td>
+<td>80.7%</td>
+</tr>
+<tr>
+<td>9</td>
+<td>n=24</td>
+<td>0.312</td>
+<td>19.853</td>
+<td>82.7%</td>
+</tr>
+<tr>
+<td>10</td>
+<td>n=28</td>
+<td>0.323</td>
+<td>19.176</td>
+<td>68.5%</td>
+</tr>
+<tr>
+<td>11</td>
+<td>n=32</td>
+<td>0.328</td>
+<td>18.884</td>
+<td>59.0%</td>
+</tr>
+</tbody>
+</table>
+<h1 id="MPI-实例之-奇偶排序"><a href="#MPI-实例之-奇偶排序" class="headerlink" title="MPI 实例之 奇偶排序"></a>MPI 实例之 奇偶排序</h1><h2 id="串行代码-2"><a href="#串行代码-2" class="headerlink" title="串行代码"></a>串行代码</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;time.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> MAX_VALUE 100000 <span class="comment">// 随机生成的元素最大值 </span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> ARRAY_LEN 65536  <span class="comment">// 待排序数组的大小</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 随机生成待排序数组</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">generate_arr</span><span class="params">(<span class="keyword">int</span> arr[], <span class="keyword">int</span> n)</span> </span>&#123;</span><br><span class="line">   srandom(<span class="number">0</span>);</span><br><span class="line">   <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; n; ++i)</span><br><span class="line">      arr[i] = random() % MAX_VALUE;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 奇偶排序</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">odd_even_sort</span><span class="params">(<span class="keyword">int</span> arr[], <span class="keyword">int</span> len)</span> </span>&#123;</span><br><span class="line">   <span class="keyword">int</span> phase, tmp;</span><br><span class="line">    </span><br><span class="line">   <span class="keyword">for</span> (phase = <span class="number">0</span>; phase &lt; len; ++phase) &#123;</span><br><span class="line">      <span class="keyword">if</span> (phase % <span class="number">2</span> == <span class="number">0</span>) &#123;</span><br><span class="line">         <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt; len; i += <span class="number">2</span>)</span><br><span class="line">            <span class="keyword">if</span> (arr[i - <span class="number">1</span>] &gt; arr[i]) &#123;</span><br><span class="line">               tmp      = arr[i];</span><br><span class="line">               arr[i]   = arr[i<span class="number">-1</span>];</span><br><span class="line">               arr[i<span class="number">-1</span>] = tmp;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; </span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt; len - <span class="number">1</span>; i += <span class="number">2</span>)</span><br><span class="line">               <span class="keyword">if</span> (arr[i]  &gt; arr[i + <span class="number">1</span>]) &#123;</span><br><span class="line">                  tmp      = arr[i];</span><br><span class="line">                  arr[i]   = arr[i+<span class="number">1</span>];</span><br><span class="line">                  arr[i+<span class="number">1</span>] = tmp;</span><br><span class="line">               &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">const</span> <span class="keyword">char</span> * argv[])</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> arr[ARRAY_LEN];</span><br><span class="line">    generate_arr(arr, ARRAY_LEN);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">double</span> start_time;</span><br><span class="line">    <span class="keyword">double</span> end_time;</span><br><span class="line"></span><br><span class="line">    start_time = clock();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// // before</span></span><br><span class="line">    <span class="comment">// for (int i = 0; i &lt; ARRAY_LEN; ++i)</span></span><br><span class="line">    <span class="comment">//     printf("%d ", arr[i]);</span></span><br><span class="line">    <span class="comment">// printf("\n");</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// sort</span></span><br><span class="line">    odd_even_sort(arr, ARRAY_LEN);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// // after</span></span><br><span class="line">    <span class="comment">// for (int i = 0; i &lt; ARRAY_LEN; ++i)</span></span><br><span class="line">    <span class="comment">//     printf("%d ", arr[i]);</span></span><br><span class="line">    <span class="comment">// printf("\n");</span></span><br><span class="line"></span><br><span class="line">    end_time = clock();</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"==========\ntime\t= %f\n"</span>, (<span class="keyword">double</span>)(end_time - start_time) / CLOCKS_PER_SEC);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="并行代码-2"><a href="#并行代码-2" class="headerlink" title="并行代码"></a>并行代码</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;mpi.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> MAX_VALUE 2033333333 <span class="comment">// 随机生成的元素最大值 </span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> ARRAY_LEN 6553600    <span class="comment">// 待排序数组的大小</span></span></span><br><span class="line"><span class="comment">//#define PRINT_RET</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 随机生成待排序数组</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">generate_arr</span><span class="params">(<span class="keyword">int</span> arr[], <span class="keyword">int</span> n)</span> </span>&#123;</span><br><span class="line">   srand(<span class="number">0</span>);</span><br><span class="line">   <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; n; ++i)</span><br><span class="line">      arr[i] = rand() % MAX_VALUE;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 比较</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">Compare</span><span class="params">(<span class="keyword">const</span> <span class="keyword">void</span>* a_p, <span class="keyword">const</span> <span class="keyword">void</span>* b_p)</span> </span>&#123;</span><br><span class="line">   <span class="keyword">int</span> a = *((<span class="keyword">int</span>*)a_p);</span><br><span class="line">   <span class="keyword">int</span> b = *((<span class="keyword">int</span>*)b_p);</span><br><span class="line"></span><br><span class="line">   <span class="keyword">if</span> (a == b)</span><br><span class="line">      <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">   <span class="keyword">else</span> <span class="keyword">if</span> (a &gt; b)</span><br><span class="line">      <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">   <span class="keyword">else</span></span><br><span class="line">      <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 合并结对的进程中的数据，保留最小的一半</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">merge_low</span><span class="params">(<span class="keyword">int</span> my_arr[], <span class="keyword">int</span> recv_arr[], <span class="keyword">int</span> local_n)</span> </span>&#123;</span><br><span class="line">   <span class="keyword">int</span> tmp[local_n];</span><br><span class="line"></span><br><span class="line">   <span class="keyword">int</span>   my_index = <span class="number">0</span>;</span><br><span class="line">   <span class="keyword">int</span> recv_index = <span class="number">0</span>;</span><br><span class="line">   <span class="keyword">int</span>  ret_index = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">   <span class="keyword">while</span> (ret_index &lt; local_n) &#123;</span><br><span class="line">      <span class="keyword">if</span> (my_arr[my_index] &lt;= recv_arr[recv_index]) &#123;</span><br><span class="line">         tmp[ret_index] = my_arr[my_index];</span><br><span class="line">         ++ret_index;</span><br><span class="line">         ++ my_index;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">else</span> &#123;</span><br><span class="line">         tmp[ret_index] = recv_arr[recv_index];</span><br><span class="line">         ++ ret_index;</span><br><span class="line">         ++recv_index;</span><br><span class="line">      &#125;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="built_in">memcpy</span>(my_arr, tmp, local_n * <span class="keyword">sizeof</span>(<span class="keyword">int</span>));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 合并结对的进程中的数据，保留最大的一半</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">merge_high</span><span class="params">(<span class="keyword">int</span> my_arr[], <span class="keyword">int</span> recv_arr[], <span class="keyword">int</span> local_n)</span> </span>&#123;</span><br><span class="line">   <span class="keyword">int</span> tmp[local_n];</span><br><span class="line"></span><br><span class="line">   <span class="keyword">int</span>   my_index = local_n - <span class="number">1</span>;</span><br><span class="line">   <span class="keyword">int</span> recv_index = local_n - <span class="number">1</span>;</span><br><span class="line">   <span class="keyword">int</span>  ret_index = local_n - <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">   <span class="keyword">while</span> (ret_index &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">      <span class="keyword">if</span> (my_arr[my_index] &gt;= recv_arr[recv_index]) &#123;</span><br><span class="line">         tmp[ret_index] = my_arr[my_index];</span><br><span class="line">         --ret_index;</span><br><span class="line">         -- my_index;</span><br><span class="line">      &#125; </span><br><span class="line">      <span class="keyword">else</span> &#123;</span><br><span class="line">         tmp[ret_index] = recv_arr[recv_index];</span><br><span class="line">         -- ret_index;</span><br><span class="line">         --recv_index;</span><br><span class="line">      &#125;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="built_in">memcpy</span>(my_arr, tmp, local_n * <span class="keyword">sizeof</span>(<span class="keyword">int</span>));</span><br><span class="line">&#125; </span><br><span class="line"></span><br><span class="line"><span class="comment">// 一个轮次的排序</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">odd_even_iteration</span><span class="params">(<span class="keyword">int</span> local_arr[], <span class="keyword">int</span> local_n, <span class="keyword">int</span> even_partner, <span class="keyword">int</span> odd_partner, </span></span></span><br><span class="line"><span class="function"><span class="params">                        <span class="keyword">int</span> my_rank, <span class="keyword">int</span> p, MPI_Comm comm, <span class="keyword">int</span> phase)</span> </span>&#123;</span><br><span class="line">   <span class="keyword">int</span> tmp[local_n];</span><br><span class="line"></span><br><span class="line">   <span class="keyword">if</span> (<span class="number">0</span> == phase % <span class="number">2</span>) &#123; <span class="comment">// even phase</span></span><br><span class="line">      <span class="keyword">if</span> (even_partner &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">         MPI_Sendrecv(local_arr, local_n, MPI_INT, even_partner, <span class="number">0</span>, </span><br><span class="line">                            tmp, local_n, MPI_INT, even_partner, <span class="number">0</span>, comm,</span><br><span class="line">                            MPI_STATUS_IGNORE);</span><br><span class="line">         <span class="keyword">if</span> (<span class="number">0</span> != my_rank % <span class="number">2</span>)</span><br><span class="line">            merge_high(local_arr, tmp, local_n);</span><br><span class="line">         <span class="keyword">else</span></span><br><span class="line">            merge_low(local_arr, tmp, local_n);</span><br><span class="line">      &#125;</span><br><span class="line">   &#125; </span><br><span class="line">   <span class="keyword">else</span> &#123; <span class="comment">// odd phase</span></span><br><span class="line">      <span class="keyword">if</span> (odd_partner &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">         MPI_Sendrecv(local_arr, local_n, MPI_INT, odd_partner, <span class="number">0</span>, </span><br><span class="line">                            tmp, local_n, MPI_INT, odd_partner, <span class="number">0</span>, comm,</span><br><span class="line">                            MPI_STATUS_IGNORE);</span><br><span class="line">         <span class="keyword">if</span> (<span class="number">0</span> != my_rank % <span class="number">2</span>)</span><br><span class="line">            merge_low(local_arr, tmp, local_n);</span><br><span class="line">         <span class="keyword">else</span></span><br><span class="line">            merge_high(local_arr, tmp, local_n);</span><br><span class="line">      &#125;</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 奇偶排序</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">odd_even_sort</span><span class="params">(<span class="keyword">int</span> local_arr[], <span class="keyword">int</span> local_n, <span class="keyword">int</span> my_rank, <span class="keyword">int</span> comm_sz)</span> </span>&#123;</span><br><span class="line">   <span class="keyword">int</span> phase;</span><br><span class="line">   <span class="keyword">int</span> *temp_B;</span><br><span class="line">   <span class="keyword">int</span> even_partner;</span><br><span class="line">   <span class="keyword">int</span>  odd_partner;</span><br><span class="line"></span><br><span class="line">   <span class="comment">// 找到结对的进程</span></span><br><span class="line">   <span class="keyword">if</span> (<span class="number">0</span> != my_rank % <span class="number">2</span>) &#123; <span class="comment">// 进程号为奇数</span></span><br><span class="line">      even_partner = my_rank - <span class="number">1</span>;</span><br><span class="line">      odd_partner  = my_rank + <span class="number">1</span>;</span><br><span class="line">      <span class="keyword">if</span> (odd_partner == comm_sz) </span><br><span class="line">         odd_partner = MPI_PROC_NULL;</span><br><span class="line">   &#125; <span class="keyword">else</span> &#123; <span class="comment">// 进程号为偶数</span></span><br><span class="line">      odd_partner  = my_rank - <span class="number">1</span>;  </span><br><span class="line">      even_partner = my_rank + <span class="number">1</span>;</span><br><span class="line">      <span class="keyword">if</span> (even_partner == comm_sz) </span><br><span class="line">         even_partner = MPI_PROC_NULL;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="comment">// 内建的快排</span></span><br><span class="line">   qsort(local_arr, local_n, <span class="keyword">sizeof</span>(<span class="keyword">int</span>), Compare);</span><br><span class="line"></span><br><span class="line">   <span class="comment">// 排序</span></span><br><span class="line">   <span class="keyword">for</span> (phase = <span class="number">0</span>; phase &lt; comm_sz; ++phase)</span><br><span class="line">      odd_even_iteration(local_arr, local_n, even_partner, odd_partner, </span><br><span class="line">                           my_rank, local_n, MPI_COMM_WORLD, phase);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">const</span> <span class="keyword">char</span> * argv[])</span> </span>&#123;</span><br><span class="line">   <span class="keyword">int</span> my_rank;</span><br><span class="line">   <span class="keyword">int</span> comm_sz;</span><br><span class="line"></span><br><span class="line">   <span class="keyword">double</span> start_time;</span><br><span class="line">   <span class="keyword">double</span>   end_time;</span><br><span class="line">   </span><br><span class="line">   MPI_Init(<span class="literal">NULL</span>, <span class="literal">NULL</span>);</span><br><span class="line">   MPI_Comm_rank(MPI_COMM_WORLD, &amp;my_rank);</span><br><span class="line">   MPI_Comm_size(MPI_COMM_WORLD, &amp;comm_sz);</span><br><span class="line"></span><br><span class="line">   <span class="keyword">int</span> local_n = ARRAY_LEN / comm_sz;</span><br><span class="line">   <span class="keyword">int</span> local_arr[local_n];</span><br><span class="line">   <span class="keyword">int</span> *global_arr;</span><br><span class="line"></span><br><span class="line">   <span class="comment">// 生成待排序数组并分发</span></span><br><span class="line">   <span class="keyword">if</span> (<span class="number">0</span> == my_rank) &#123;</span><br><span class="line">      global_arr = (<span class="keyword">int</span>*)<span class="built_in">malloc</span>(ARRAY_LEN * <span class="keyword">sizeof</span>(<span class="keyword">int</span>));</span><br><span class="line">      generate_arr(global_arr, ARRAY_LEN);</span><br><span class="line"></span><br><span class="line">      <span class="meta">#<span class="meta-keyword">ifdef</span> PRINT_RET</span></span><br><span class="line">      <span class="comment">// TEST print</span></span><br><span class="line">      <span class="built_in">printf</span>(<span class="string">"=====original\n"</span>);</span><br><span class="line">      <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; ARRAY_LEN; ++i) &#123;</span><br><span class="line">         <span class="built_in">printf</span>(<span class="string">"%d "</span>, global_arr[i]);</span><br><span class="line">         <span class="comment">// if (0 == (i + 1) % local_n)</span></span><br><span class="line">         <span class="comment">//    printf("\n");</span></span><br><span class="line">      &#125;</span><br><span class="line">      <span class="built_in">printf</span>(<span class="string">"\n"</span>);</span><br><span class="line">      <span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line"></span><br><span class="line">      start_time = MPI_Wtime();</span><br><span class="line">      <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt; comm_sz; ++i)</span><br><span class="line">         MPI_Ssend(global_arr + local_n * i, local_n, MPI_INT, i, <span class="number">100</span>, MPI_COMM_WORLD); </span><br><span class="line">      <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; local_n; ++i)</span><br><span class="line">         local_arr[i] = global_arr[i];</span><br><span class="line"></span><br><span class="line">      <span class="built_in">free</span>(global_arr);</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="keyword">else</span> &#123;</span><br><span class="line">      MPI_Recv(local_arr, local_n, MPI_INT, <span class="number">0</span>, <span class="number">100</span>, MPI_COMM_WORLD, MPI_STATUS_IGNORE);</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="comment">// 奇偶排序</span></span><br><span class="line">   odd_even_sort(local_arr, local_n, my_rank, comm_sz);</span><br><span class="line"></span><br><span class="line">   <span class="comment">// 回收到第一个进程保存并输出（使用 MPI_Gather）</span></span><br><span class="line">   <span class="keyword">if</span> (<span class="number">0</span> != my_rank) &#123;</span><br><span class="line">      MPI_Gather(local_arr, local_n, MPI_INT, global_arr, local_n, MPI_INT, <span class="number">0</span>, MPI_COMM_WORLD);</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="keyword">else</span> &#123;</span><br><span class="line">      global_arr = (<span class="keyword">int</span>*)<span class="built_in">malloc</span>(ARRAY_LEN * <span class="keyword">sizeof</span>(<span class="keyword">int</span>));</span><br><span class="line">      MPI_Gather(local_arr, local_n, MPI_INT, global_arr, local_n, MPI_INT, <span class="number">0</span>, MPI_COMM_WORLD);</span><br><span class="line"></span><br><span class="line">      end_time = MPI_Wtime();</span><br><span class="line"></span><br><span class="line">      <span class="meta">#<span class="meta-keyword">ifdef</span> PRINT_RET</span></span><br><span class="line">      <span class="comment">// TEST print</span></span><br><span class="line">      <span class="built_in">printf</span>(<span class="string">"=====ret\n"</span>);</span><br><span class="line">      <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; ARRAY_LEN; ++i)&#123;</span><br><span class="line">         <span class="built_in">printf</span>(<span class="string">"%d "</span>, global_arr[i]);</span><br><span class="line">         <span class="comment">// if (0 == (i + 1) % local_n)</span></span><br><span class="line">         <span class="comment">//    printf("\n");</span></span><br><span class="line">      &#125;</span><br><span class="line">      <span class="built_in">printf</span>(<span class="string">"\n"</span>);</span><br><span class="line">      <span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line"></span><br><span class="line">      <span class="built_in">printf</span>(<span class="string">"==========\ntime\t= %f\n"</span>, end_time - start_time);</span><br><span class="line"></span><br><span class="line">      <span class="built_in">free</span>(global_arr);</span><br><span class="line">   &#125; </span><br><span class="line"></span><br><span class="line">   <span class="comment">// // 回收到第一个进程保存并输出（使用 MPI_Ssend、MPI_Recv）</span></span><br><span class="line">   <span class="comment">// if (0 != my_rank) &#123;</span></span><br><span class="line">   <span class="comment">//    MPI_Ssend(&amp;local_arr, local_n, MPI_INT, 0, 99, MPI_COMM_WORLD); </span></span><br><span class="line">   <span class="comment">// &#125;</span></span><br><span class="line">   <span class="comment">// else &#123;</span></span><br><span class="line">   <span class="comment">//    int global_arr[ARRAY_LEN];</span></span><br><span class="line">   <span class="comment">//    for (int i = 0; i &lt; local_n; ++i)</span></span><br><span class="line">   <span class="comment">//       global_arr[i] = local_arr[i];</span></span><br><span class="line"></span><br><span class="line">   <span class="comment">//    for (int i = 1; i &lt; comm_sz; ++i) &#123;</span></span><br><span class="line">   <span class="comment">//       MPI_Recv(&amp;local_arr, local_n, MPI_INT, i, 99, MPI_COMM_WORLD, MPI_STATUS_IGNORE);</span></span><br><span class="line">   <span class="comment">//       for (int j = 0; j &lt; local_n; ++j)</span></span><br><span class="line">   <span class="comment">//          global_arr[local_n * i + j] = local_arr[j];</span></span><br><span class="line">   <span class="comment">//    &#125;</span></span><br><span class="line"></span><br><span class="line">   <span class="comment">//    end_time = MPI_Wtime();</span></span><br><span class="line"></span><br><span class="line">   <span class="comment">//    #ifdef PRINT_DATA</span></span><br><span class="line">   <span class="comment">//    // TEST print</span></span><br><span class="line">   <span class="comment">//    printf("=====ret\n");</span></span><br><span class="line">   <span class="comment">//    for (int i = 0; i &lt; ARRAY_LEN; ++i)&#123;</span></span><br><span class="line">   <span class="comment">//       printf("%d ", global_arr[i]);</span></span><br><span class="line">   <span class="comment">//       // if (0 == (i + 1) % local_n)</span></span><br><span class="line">   <span class="comment">//       //    printf("\n");</span></span><br><span class="line">   <span class="comment">//    &#125;</span></span><br><span class="line">   <span class="comment">//    printf("\n");</span></span><br><span class="line">   <span class="comment">//    #endif</span></span><br><span class="line"></span><br><span class="line">   <span class="comment">//    printf("\n--------------------\ntime: %f\n--------------------\n", end_time - start_time);</span></span><br><span class="line">   <span class="comment">// &#125;</span></span><br><span class="line">    </span><br><span class="line">   MPI_Finalize();</span><br><span class="line">   <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="结果对比-2"><a href="#结果对比-2" class="headerlink" title="结果对比"></a>结果对比</h2><ol>
+<li><p>天河二号串行结果</p>
+<p> <img src="http://7xrybf.com1.z0.glb.clouddn.com/20160610_07_oe.png" alt=""></p>
+</li>
+<li><p>天河二号并行结果 (n = 1)</p>
+<p> <img src="http://7xrybf.com1.z0.glb.clouddn.com/20160610_08_oe_mpi_n=1.png" alt=""></p>
+</li>
+<li><p>天河二号并行结果 (n = 12)</p>
+<p> <img src="http://7xrybf.com1.z0.glb.clouddn.com/20160610_09_oe_mpi_n=12.png" alt=""></p>
+</li>
+</ol>
+<h1 id="MPI-实例之-矩阵向量乘法"><a href="#MPI-实例之-矩阵向量乘法" class="headerlink" title="MPI 实例之 矩阵向量乘法"></a>MPI 实例之 矩阵向量乘法</h1><h2 id="数据生成代码"><a href="#数据生成代码" class="headerlink" title="数据生成代码"></a>数据生成代码</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> MAX_VALUE 100  <span class="comment">// 随机生成的元素最大值</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> MATRIX_M  64   <span class="comment">// 矩阵行数</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> MATRIX_N  1024 <span class="comment">// 矩阵列数</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">generate_data</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	FILE *fp = <span class="literal">NULL</span>;</span><br><span class="line">    <span class="keyword">if</span>((fp = fopen(<span class="string">"pt_mvm_data.txt"</span>,<span class="string">"w"</span>)) == <span class="literal">NULL</span>)&#123;</span><br><span class="line">    	<span class="built_in">printf</span>(<span class="string">"Open file failed.\n"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"Generating data and writing to file...\n"</span>);</span><br><span class="line"></span><br><span class="line">		srand(<span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">    	<span class="built_in">fprintf</span>(fp, <span class="string">"%d %d\n"</span>, MATRIX_M, MATRIX_N);</span><br><span class="line">		</span><br><span class="line">		<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; MATRIX_M; ++i) &#123;</span><br><span class="line">			<span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; MATRIX_N; ++j) &#123;</span><br><span class="line">				<span class="built_in">fprintf</span>(fp, <span class="string">"%2d "</span>, rand() % MAX_VALUE);</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="built_in">fprintf</span>(fp, <span class="string">"\n"</span>);</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; MATRIX_N; ++i)</span><br><span class="line">			<span class="built_in">fprintf</span>(fp, <span class="string">"%2d "</span>, rand() % MAX_VALUE);</span><br><span class="line"></span><br><span class="line">	    <span class="built_in">printf</span>(<span class="string">"Generating and writing done\n"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    fclose(fp);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">read_data</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	FILE *fp = <span class="literal">NULL</span>;</span><br><span class="line">    <span class="keyword">if</span>((fp = fopen(<span class="string">"pt_mvm_data.txt"</span>,<span class="string">"r"</span>)) == <span class="literal">NULL</span>)&#123;</span><br><span class="line">    	<span class="built_in">printf</span>(<span class="string">"Open file failed.\n"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"Reading data...\n"</span>);</span><br><span class="line"></span><br><span class="line">    	<span class="keyword">int</span> m, n;</span><br><span class="line">    	<span class="built_in">fscanf</span>(fp, <span class="string">"%d %d"</span>, &amp;m, &amp;n);</span><br><span class="line">    	<span class="built_in">printf</span>(<span class="string">"m = %d, n = %d\n"</span>, m, n);</span><br><span class="line"></span><br><span class="line">    	<span class="keyword">int</span> mat[m * n];</span><br><span class="line">    	<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; m; ++i) &#123;</span><br><span class="line">			<span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; n; ++j) &#123;</span><br><span class="line">				<span class="built_in">fscanf</span>(fp, <span class="string">"%d"</span>, &amp;mat[i * n + j]);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; m; ++i) &#123;</span><br><span class="line">			<span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; n; ++j) &#123;</span><br><span class="line">				<span class="built_in">printf</span>(<span class="string">"%2d "</span>, mat[i * n + j]);</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="built_in">printf</span>(<span class="string">"\n"</span>);</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">int</span> vec[n];</span><br><span class="line">		<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; n; ++i) &#123;</span><br><span class="line">			<span class="built_in">fscanf</span>(fp, <span class="string">"%d "</span>, &amp;vec[i]);</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"===vec\n"</span>);</span><br><span class="line">		<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; n; ++i)</span><br><span class="line">			<span class="built_in">printf</span>(<span class="string">"%2d "</span>, vec[i]);</span><br><span class="line"></span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"\nReading done\n"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    fclose(fp);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"hello world\n"</span>);</span><br><span class="line"></span><br><span class="line">	generate_data();</span><br><span class="line"></span><br><span class="line">	<span class="comment">//read_data();</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="串行代码-3"><a href="#串行代码-3" class="headerlink" title="串行代码"></a>串行代码</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;time.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//#define PRINT_MAT</span></span><br><span class="line"><span class="comment">//#define PRINT_RET</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> MAX_VALUE 100  <span class="comment">// 随机生成的元素最大值</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> MATRIX_M  64   <span class="comment">// 矩阵行数</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> MATRIX_N  1024 <span class="comment">// 矩阵列数</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">generate_data</span><span class="params">(<span class="keyword">int</span> matrix[], <span class="keyword">int</span> <span class="built_in">vector</span>[], <span class="keyword">double</span> result[], <span class="keyword">int</span> m, <span class="keyword">int</span> n)</span> </span>&#123;</span><br><span class="line">    FILE *fp = <span class="literal">NULL</span>;</span><br><span class="line">    <span class="keyword">if</span>((fp = fopen(<span class="string">"pt_mvm_data.txt"</span>,<span class="string">"r"</span>)) == <span class="literal">NULL</span>)&#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"Open file failed.\n"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"Reading data...\n"</span>);</span><br><span class="line"></span><br><span class="line">        <span class="built_in">fscanf</span>(fp, <span class="string">"%d %d"</span>, &amp;m, &amp;n);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"m = %d, n = %d\n"</span>, m, n);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; MATRIX_M; ++i) &#123;</span><br><span class="line">            result[i] = <span class="number">0</span>;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; MATRIX_N; ++j) &#123;</span><br><span class="line">                <span class="built_in">fscanf</span>(fp, <span class="string">"%d"</span>, &amp;matrix[i * MATRIX_N + j]);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; MATRIX_N; ++i) &#123;</span><br><span class="line">            <span class="built_in">fscanf</span>(fp, <span class="string">"%d "</span>, &amp;<span class="built_in">vector</span>[i]);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"Reading done\n"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    fclose(fp);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">multiply</span><span class="params">(<span class="keyword">int</span> matrix[], <span class="keyword">int</span> <span class="built_in">vector</span>[], <span class="keyword">double</span> result[], <span class="keyword">int</span> m, <span class="keyword">int</span> n)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; m; ++i) &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; n; ++j) &#123;</span><br><span class="line">            result[i] += matrix[i * n + j] * <span class="built_in">vector</span>[j];</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">const</span> <span class="keyword">char</span> * argv[])</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span>    mat[MATRIX_M * MATRIX_N];</span><br><span class="line">    <span class="keyword">int</span>    vec[MATRIX_N];</span><br><span class="line">    <span class="keyword">double</span> ret[MATRIX_M];</span><br><span class="line"></span><br><span class="line">    <span class="keyword">double</span> start_time;</span><br><span class="line">    <span class="keyword">double</span>   end_time;</span><br><span class="line">    <span class="keyword">double</span> total_time = <span class="number">0</span>;</span><br><span class="line">    </span><br><span class="line">    generate_data(mat, vec, ret, MATRIX_M, MATRIX_N);</span><br><span class="line">    </span><br><span class="line">    <span class="meta">#<span class="meta-keyword">ifdef</span> PRINT_MAT</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"=====matrix\n"</span>);</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; MATRIX_M; ++i) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"row #%3d: "</span>, i);</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; MATRIX_N; ++j) &#123;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">"%3d "</span>, mat[MATRIX_N * i + j]);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"\n"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"=====vector\n"</span>);</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; MATRIX_N; ++i)</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"%3d "</span>, vec[i]);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"\n"</span>);</span><br><span class="line">    <span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">int</span> times = <span class="number">10000</span>;</span><br><span class="line">    <span class="keyword">while</span>(times--) &#123;</span><br><span class="line">        start_time = clock();</span><br><span class="line"></span><br><span class="line">        multiply(mat, vec, ret, MATRIX_M, MATRIX_N);</span><br><span class="line">        </span><br><span class="line">        <span class="meta">#<span class="meta-keyword">ifdef</span> PRINT_RET</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"=====result\n"</span>);</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; MATRIX_M; ++i)</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">"%-9f "</span>, ret[i]);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"\n"</span>);</span><br><span class="line">        <span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line"></span><br><span class="line">        end_time = clock();</span><br><span class="line"></span><br><span class="line">        total_time += ((<span class="keyword">double</span>)(end_time - start_time) / CLOCKS_PER_SEC);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"==========\ntime\t= %f\n"</span>, total_time);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="并行代码-3"><a href="#并行代码-3" class="headerlink" title="并行代码"></a>并行代码</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  main.c</span></span><br><span class="line"><span class="comment">//  Bingxing</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  Created by PTkin_Wang on 16/5/27.</span></span><br><span class="line"><span class="comment">//  Copyright © 2016年 PTkin_Wang. All rights reserved.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;mpi.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//#define PRINT_MAT</span></span><br><span class="line"><span class="comment">//#define PRINT_RET</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> MAX_VALUE 1000 <span class="comment">// 随机生成的元素最大值</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> MATRIX_M  64   <span class="comment">// 矩阵行数</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> MATRIX_N  1024 <span class="comment">// 矩阵列数</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">generate_data</span><span class="params">(<span class="keyword">int</span> matrix[], <span class="keyword">int</span> <span class="built_in">vector</span>[], <span class="keyword">int</span> m, <span class="keyword">int</span> n)</span> </span>&#123;</span><br><span class="line">    FILE *fp = <span class="literal">NULL</span>;</span><br><span class="line">    <span class="keyword">if</span>((fp = fopen(<span class="string">"pt_mvm_data.txt"</span>,<span class="string">"r"</span>)) == <span class="literal">NULL</span>)&#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"Open file failed.\n"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"Reading data...\n"</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">int</span> m, n;</span><br><span class="line">        <span class="built_in">fscanf</span>(fp, <span class="string">"%d %d"</span>, &amp;m, &amp;n);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"m = %d, n = %d\n"</span>, m, n);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; MATRIX_M; ++i) &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; MATRIX_N; ++j) &#123;</span><br><span class="line">                <span class="built_in">fscanf</span>(fp, <span class="string">"%d"</span>, &amp;matrix[i * MATRIX_N + j]);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; MATRIX_N; ++i) &#123;</span><br><span class="line">            <span class="built_in">fscanf</span>(fp, <span class="string">"%d "</span>, &amp;<span class="built_in">vector</span>[i]);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"Reading done\n"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    fclose(fp);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">multiply</span><span class="params">(<span class="keyword">int</span> matrix[], <span class="keyword">int</span> <span class="built_in">vector</span>[], <span class="keyword">double</span> result[], <span class="keyword">int</span> m, <span class="keyword">int</span> n, <span class="keyword">int</span> my_rank)</span> </span>&#123;</span><br><span class="line">    <span class="built_in">memset</span>(result, <span class="number">0</span>, m*<span class="keyword">sizeof</span>(<span class="keyword">double</span>));</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; m; ++i) &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; n; ++j) &#123;</span><br><span class="line">            result[i] += matrix[i * n + j] * <span class="built_in">vector</span>[j]; </span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">const</span> <span class="keyword">char</span> * argv[])</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> my_rank;</span><br><span class="line">    <span class="keyword">int</span> comm_sz;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">double</span> start_time;</span><br><span class="line">    <span class="keyword">double</span>  dist_time = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">double</span>  calc_time = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">double</span>  recv_time = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">double</span> total_time = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    MPI_Init(<span class="literal">NULL</span>, <span class="literal">NULL</span>);</span><br><span class="line">    MPI_Comm_rank(MPI_COMM_WORLD, &amp;my_rank);</span><br><span class="line">    MPI_Comm_size(MPI_COMM_WORLD, &amp;comm_sz);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">int</span>    local_m = MATRIX_M / comm_sz;</span><br><span class="line">    <span class="keyword">int</span>    local_mat[local_m * MATRIX_N];</span><br><span class="line">    <span class="keyword">double</span> local_ret[local_m];</span><br><span class="line">    <span class="built_in">memset</span>(local_ret, <span class="number">0</span>, local_m * <span class="keyword">sizeof</span>(<span class="keyword">double</span>));</span><br><span class="line"></span><br><span class="line">    <span class="keyword">int</span> vec[MATRIX_N];</span><br><span class="line">    <span class="keyword">int</span> *global_mat = <span class="literal">NULL</span>;</span><br><span class="line">    <span class="keyword">double</span> *ret     = <span class="literal">NULL</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 生成矩阵 mat 和向量 vec</span></span><br><span class="line">    <span class="keyword">if</span> (<span class="number">0</span> == my_rank) &#123;</span><br><span class="line">        global_mat = (<span class="keyword">int</span>*)<span class="built_in">malloc</span>(MATRIX_M * MATRIX_N * <span class="keyword">sizeof</span>(<span class="keyword">int</span>));</span><br><span class="line">        generate_data(global_mat, vec, MATRIX_M, MATRIX_N);</span><br><span class="line"></span><br><span class="line">        <span class="meta">#<span class="meta-keyword">ifdef</span> PRINT_MAT</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"=====matrix\n"</span>);</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; MATRIX_M; ++i) &#123;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">"row #%3d: "</span>, i);</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; MATRIX_N; ++j) &#123;</span><br><span class="line">                <span class="built_in">printf</span>(<span class="string">"%3d "</span>, global_mat[MATRIX_N * i + j]);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">"\n"</span>);</span><br><span class="line">          &#125;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"=====vector\n"</span>);</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; MATRIX_N; ++i)</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">"%3d "</span>, vec[i]);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"\n"</span>);</span><br><span class="line">        <span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">int</span> times = <span class="number">10000</span>;</span><br><span class="line">    <span class="keyword">while</span> (times--) &#123;</span><br><span class="line">        <span class="comment">// 分发</span></span><br><span class="line">        <span class="keyword">if</span> (<span class="number">0</span> == my_rank) &#123;</span><br><span class="line">            start_time = MPI_Wtime();</span><br><span class="line"></span><br><span class="line">            MPI_Scatter(global_mat, local_m * MATRIX_N, MPI_INT,</span><br><span class="line">                         local_mat, local_m * MATRIX_N, MPI_INT,</span><br><span class="line">                                 <span class="number">0</span>, MPI_COMM_WORLD);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">            MPI_Scatter(global_mat, local_m * MATRIX_N, MPI_INT,</span><br><span class="line">                         local_mat, local_m * MATRIX_N, MPI_INT,</span><br><span class="line">                                 <span class="number">0</span>, MPI_COMM_WORLD);       </span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        MPI_Bcast(vec, MATRIX_N, MPI_INT, <span class="number">0</span>, MPI_COMM_WORLD);</span><br><span class="line"></span><br><span class="line">        dist_time  += (MPI_Wtime() - start_time);</span><br><span class="line">        total_time += (MPI_Wtime() - start_time);</span><br><span class="line">        start_time  = MPI_Wtime();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 分别进行矩阵向量乘法</span></span><br><span class="line">        multiply(local_mat, vec, local_ret, local_m, MATRIX_N, my_rank);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 发回第一个进程输出</span></span><br><span class="line">        <span class="keyword">if</span> (<span class="number">0</span> != my_rank) &#123;</span><br><span class="line">            MPI_Gather(local_ret, local_m, MPI_DOUBLE, </span><br><span class="line">                             ret, local_m, MPI_DOUBLE, </span><br><span class="line">                               <span class="number">0</span>, MPI_COMM_WORLD);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">            calc_time  += (MPI_Wtime() - start_time);</span><br><span class="line">            total_time += (MPI_Wtime() - start_time);</span><br><span class="line">            start_time  = MPI_Wtime();</span><br><span class="line"></span><br><span class="line">            ret = <span class="built_in">malloc</span>(MATRIX_M*<span class="keyword">sizeof</span>(<span class="keyword">double</span>));</span><br><span class="line">            <span class="built_in">memset</span>(ret, <span class="number">0</span>, MATRIX_M*<span class="keyword">sizeof</span>(<span class="keyword">double</span>));</span><br><span class="line"></span><br><span class="line">            MPI_Gather(local_ret, local_m, MPI_DOUBLE, </span><br><span class="line">                             ret, local_m, MPI_DOUBLE, </span><br><span class="line">                               <span class="number">0</span>, MPI_COMM_WORLD);</span><br><span class="line"></span><br><span class="line">            recv_time  += (MPI_Wtime() - start_time);</span><br><span class="line">            total_time += (MPI_Wtime() - start_time);</span><br><span class="line"></span><br><span class="line">            <span class="meta">#<span class="meta-keyword">ifdef</span> PRINT_RET</span></span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">"=====result\n"</span>);</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; MATRIX_M; ++i)</span><br><span class="line">                <span class="built_in">printf</span>(<span class="string">"%-9f "</span>, ret[i]);</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">"\n"</span>);</span><br><span class="line">            <span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line">            </span><br><span class="line">            <span class="built_in">free</span>(ret);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (my_rank == <span class="number">0</span>)</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"==========\ndist_time\t= %f\ncalc_time\t= %f\nrecv_time\t= %f\ntotal_time\t= %f\n"</span>, </span><br><span class="line">                dist_time, calc_time, recv_time, total_time);</span><br><span class="line">     </span><br><span class="line">    MPI_Finalize();</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="结果对比-3"><a href="#结果对比-3" class="headerlink" title="结果对比"></a>结果对比</h2><ol>
+<li><p>天河二号数据生成结果</p>
+<p> <img src="http://7xrybf.com1.z0.glb.clouddn.com/20160610_10_mvm_generate.png" alt=""></p>
+</li>
+<li><p>天河二号串行结果</p>
+<p> <img src="http://7xrybf.com1.z0.glb.clouddn.com/20160610_11_mvm.png" alt=""></p>
+</li>
+<li><p>天河二号并行结果 (n = 1)</p>
+<p> <img src="http://7xrybf.com1.z0.glb.clouddn.com/20160610_12_mvm_mpi_n=1.png" alt=""></p>
+</li>
+<li><p>天河二号并行结果 (n = 24)</p>
+<p> <img src="http://7xrybf.com1.z0.glb.clouddn.com/20160610_13_mvm_mpi_n=24.png" alt=""></p>
+</li>
+<li><p>天河二号多次运行结果对比</p>
+</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>编号</th>
+<th>进程数</th>
+<th>分发时间</th>
+<th>运算时间</th>
+<th>数据回收时间</th>
+<th>总时间</th>
+<th>加速比(按运算时间)</th>
+<th>效率(按运算时间)</th>
+<th>加速比(按总时间)</th>
+<th>效率(按总时间)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>串行</td>
+<td>\</td>
+<td>\</td>
+<td>\</td>
+<td>0.990</td>
+<td>\</td>
+<td>\</td>
+<td>\</td>
+<td>\</td>
+</tr>
+<tr>
+<td>2</td>
+<td>n=1</td>
+<td>0.1778</td>
+<td>0.6885</td>
+<td></td>
+<td>0.8378</td>
+<td>1</td>
+<td>100%</td>
+<td>1</td>
+<td>100%</td>
+</tr>
+<tr>
+<td>3</td>
+<td>n=2</td>
+<td>0.3282</td>
+<td>0.3485</td>
+<td></td>
+<td>0.6994</td>
+<td>1.976</td>
+<td>98.8%</td>
+<td>1.198</td>
+<td>59.9%</td>
+</tr>
+<tr>
+<td>4</td>
+<td>n=4</td>
+<td>0.4409</td>
+<td>0.1736</td>
+<td></td>
+<td>0.7245</td>
+<td>3.967</td>
+<td>99.2%</td>
+<td>1.156</td>
+<td>28.9%</td>
+</tr>
+<tr>
+<td>5</td>
+<td>n=8</td>
+<td>0.5578</td>
+<td>0.0930</td>
+<td></td>
+<td>0.7630</td>
+<td>7.403</td>
+<td>92.5%</td>
+<td>1.098</td>
+<td>13.7%</td>
+</tr>
+<tr>
+<td>6</td>
+<td>n=12</td>
+<td>0.4539</td>
+<td>0.0579</td>
+<td></td>
+<td>0.6502</td>
+<td>11.891</td>
+<td>99.1%</td>
+<td>1.289</td>
+<td>10.7%</td>
+</tr>
+<tr>
+<td>7</td>
+<td>n=16</td>
+<td>0.6037</td>
+<td>0.0471</td>
+<td></td>
+<td>0.8141</td>
+<td>14.618</td>
+<td>91.4%</td>
+<td>1.029</td>
+<td>6.4%</td>
+</tr>
+<tr>
+<td>8</td>
+<td>n=20</td>
+<td>0.5920</td>
+<td>0.0346</td>
+<td></td>
+<td>0.7476</td>
+<td>19.899</td>
+<td>99.5%</td>
+<td>1.121</td>
+<td>5.6%</td>
+</tr>
+<tr>
+<td>9</td>
+<td>n=24</td>
+<td>0.3890</td>
+<td>0.0249</td>
+<td></td>
+<td>0.5737</td>
+<td>27.651</td>
+<td>115.2%</td>
+<td>1.460</td>
+<td>6.1%</td>
+</tr>
+<tr>
+<td>10</td>
+<td>n=28</td>
+<td>0.5486</td>
+<td>0.0238</td>
+<td></td>
+<td>0.8313</td>
+<td>28.929</td>
+<td>103.3%</td>
+<td>1.008</td>
+<td>3.6%</td>
+</tr>
+<tr>
+<td>11</td>
+<td>n=32</td>
+<td>0.6166</td>
+<td>0.0238</td>
+<td></td>
+<td>0.8651</td>
+<td>28.929</td>
+<td>90.4%</td>
+<td>0.968</td>
+<td>3.0%</td>
+</tr>
+</tbody>
+</table>
+<h1 id="实验结论"><a href="#实验结论" class="headerlink" title="实验结论"></a>实验结论</h1><p>以下：</p>
+<ol>
+<li><p>分发数据的时间远远超过处理数据需要的时间。也就是说在现实的应用中，我们极有可能在计算能力上压力不大，反而在数据的传输、IO方面遭遇瓶颈。例如在矩阵向量乘法算法中，运算部分加速比超高、但总体加速比不高，原因在于分发数据的时间远大于处理数据的时间，会造成例如从 (1000+100) 优化到 (1000+10) 的尴尬情形。</p>
+</li>
+<li><p>线性加速比不可能达到，但是我们可以通过改换另一种并行化的思路，可以极大地影响并行化之后的加速比与效率。</p>
+</li>
+<li><p>在天河二号直接运行串行程序的耗时比使用单进程运行并行程序的耗时要高很多，猜测可能是由于天河二号中串行程序运行的默认机器主要用于分配任务，不需要高性能，因此使用了一台性能不高的机器。</p>
+</li>
+<li><p>在矩阵向量乘法中，有两次实验的效率超过了 100%，多次尝试之后依然可以得到类似的结果，猜测可能的原因如下：</p>
+<ol>
+<li>代码有误（这个检查过多遍没有发现错误，但不排除）</li>
+<li>当 n=1 的时候，天河二号会分配性能稍差的机器来跑，然后在多个性能稍高的核上进行并行处理的时候，有可能令效率超过 100%</li>
+<li>天河二号的编译优化优化了一些不为人知的地方</li>
+</ol>
+</li>
+</ol>
+<h1 id="补充：几个小坑"><a href="#补充：几个小坑" class="headerlink" title="补充：几个小坑"></a>补充：几个小坑</h1><ol>
+<li><p>ssh 连接天河二号报错 <strong>REMOTE HOST IDENTIFICATION HAS CHANGED!</strong></p>
+<p> <strong>solution</strong>: 使用以下命令进入 <code>known_hosts</code>，删除天河二号 ip 对应的 <code>ssh-rsa</code>。</p>
+<pre><code>vim ~/.ssh/known_hosts 
+</code></pre></li>
+<li><p>mpicc编译报错 <strong>error: expected an expression</strong> 之类的明明看上去代码没有问题却报了错</p>
+<p> <strong>solution</strong>: 天河二号默认支持的 C 语言版本比较老，我们在编译的时候使用配置 <strong>-std=C99</strong> 可以设置编译支持的 C 语言版本为 <code>C99</code>，即可解决问题。</p>
+</li>
+</ol>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ol>
+<li><p><a href="http://item.jd.com/11129425.html" target="_blank" rel="noopener">Pacheco, P. 邓倩妮, 等. 并行程序设计导论[M]. 北京: 机械工业出版社, 2012</a></p>
+</li>
+<li><p><a href="http://hackecho.com/2013/04/basics-of-mpi/" target="_blank" rel="noopener">MPI 并行程序设计基础 | Hackecho</a></p>
+</li>
+</ol>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/C/" rel="tag">#C</a>
+          
+            <a href="/tags/MPI/" rel="tag">#MPI</a>
+          
+            <a href="/tags/Parallel/" rel="tag">#Parallel</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/ML_Notes_for_CS229/" rel="next" title="ML Notes for CS229">
+                <i class="fa fa-chevron-left"></i> ML Notes for CS229
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/story_of_gcc_llvm_clang/" rel="prev" title="GCC、LLVM、Clang的故事">
+                GCC、LLVM、Clang的故事 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="//schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpg"
+               alt="ptkin" />
+          <p class="site-author-name" itemprop="name">ptkin</p>
+          <p class="site-description motion-element" itemprop="description">Do it! Finish it! Now!</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">19</span>
+              <span class="site-state-item-name">posts</span>
+            </a>
+          </div>
+
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">41</span>
+                <span class="site-state-item-name">tags</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-block">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              Links
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://zhuanlan.zhihu.com/ai-insight" title="AI Insight" target="_blank">AI Insight</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://karpathy.github.io/" title="Andrej Karpathy blog" target="_blank">Andrej Karpathy blog</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://zh.mxnet.io/blog/" title="ApacheMXNet" target="_blank">ApacheMXNet</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://cenalulu.github.io/" title="cenalulu'S Tech Blog" target="_blank">cenalulu'S Tech Blog</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://chrisalbon.com/" title="Chris Albon" target="_blank">Chris Albon</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://blog.codinglabs.org/" title="CodingLabs" target="_blank">CodingLabs</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://colah.github.io/" title="colah's blog" target="_blank">colah's blog</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://distill.pub/" title="Distill" target="_blank">Distill</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://saicoco.github.io/" title="Fix you" target="_blank">Fix you</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.figotan.org/" title="FIGOTAN's Blog" target="_blank">FIGOTAN's Blog</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://freemind.pluskid.org/" title="Free Mind" target="_blank">Free Mind</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://charlesliuyx.github.io/" title="Go Further" target="_blank">Go Further</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://hahack.com/" title="HaHack" target="_blank">HaHack</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://handong1587.github.io" title="handong1587's blog" target="_blank">handong1587's blog</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://iceory.github.io/" title="iceory's blog" target="_blank">iceory's blog</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.codelast.com/" title="Intent & Focused" target="_blank">Intent & Focused</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://joshua881228.webfactional.com/blog_my-jumble-of-computer-vison_135/" title="JOSHUA'S BLOG" target="_blank">JOSHUA'S BLOG</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://juniperphoton.net/" title="JuniperPhoton's Blog" target="_blank">JuniperPhoton's Blog</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://closure11.com/" title="LHY's World" target="_blank">LHY's World</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://machinelearningmastery.com/" title="Machine Learning Mastery" target="_blank">Machine Learning Mastery</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.cnblogs.com/neopenx/" title="Physcalの大魔導書" target="_blank">Physcalの大魔導書</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://blog.csdn.net/abcjennifer" title="Rachel Zhang" target="_blank">Rachel Zhang</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://ruder.io/" title="Sebastian Ruder" target="_blank">Sebastian Ruder</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://zohead.com/" title="Soul Of Free Loop" target="_blank">Soul Of Free Loop</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://styletin.com/" title="Styletin" target="_blank">Styletin</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://timdettmers.com/" title="Tim Dettmers" target="_blank">Tim Dettmers</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.wildml.com/" title="WildML" target="_blank">WildML</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://dnc1994.com/" title="Wille" target="_blank">Wille</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://program-think.blogspot.com/" title="编程随想" target="_blank">编程随想</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://blog.csdn.net/red_stone1/" title="红色de石头" target="_blank">红色de石头</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://kenengba.com/" title="可能吧" target="_blank">可能吧</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://spaces.ac.cn/" title="科学空间" target="_blank">科学空间</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://coolshell.cn/" title="酷壳" target="_blank">酷壳</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://luolei.org/" title="罗磊" target="_blank">罗磊</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://blog.jimmylv.info/" title="吕立青的博客" target="_blank">吕立青的博客</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.hankcs.com/" title="码农场" target="_blank">码农场</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.fuzihao.org/blog/" title="切问录" target="_blank">切问录</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://perthcharles.github.io/" title="天赋 无与伦比的坚持" target="_blank">天赋 无与伦比的坚持</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://www.dandyweng.com/" title="翁天信" target="_blank">翁天信</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.52nlp.cn/" title="我爱自然语言处理" target="_blank">我爱自然语言处理</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://zhuanlan.zhihu.com/hsmyy" title="无痛的机器学习" target="_blank">无痛的机器学习</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.duanshishi.com/" title="小石头的码疯窝" target="_blank">小石头的码疯窝</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.read.org.cn/" title="战隼的学习探索" target="_blank">战隼的学习探索</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://ccjou.wordpress.com/" title="線代啟示錄" target="_blank">線代啟示錄</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#并行程序设计基础"><span class="nav-number">1.</span> <span class="nav-text">并行程序设计基础</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MPI-基础"><span class="nav-number">2.</span> <span class="nav-text">MPI 基础</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#MPI-程序大体结构"><span class="nav-number">2.1.</span> <span class="nav-text">MPI 程序大体结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#函数"><span class="nav-number">2.2.</span> <span class="nav-text">函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#编译与运行"><span class="nav-number">2.3.</span> <span class="nav-text">编译与运行</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MPI-实例"><span class="nav-number">3.</span> <span class="nav-text">MPI 实例</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MPI-实例之-helloworld"><span class="nav-number">4.</span> <span class="nav-text">MPI 实例之 helloworld</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#串行代码"><span class="nav-number">4.1.</span> <span class="nav-text">串行代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#并行代码"><span class="nav-number">4.2.</span> <span class="nav-text">并行代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结果对比"><span class="nav-number">4.3.</span> <span class="nav-text">结果对比</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MPI-实例之-梯形积分法"><span class="nav-number">5.</span> <span class="nav-text">MPI 实例之 梯形积分法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#串行代码-1"><span class="nav-number">5.1.</span> <span class="nav-text">串行代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#并行代码-1"><span class="nav-number">5.2.</span> <span class="nav-text">并行代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结果对比-1"><span class="nav-number">5.3.</span> <span class="nav-text">结果对比</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MPI-实例之-奇偶排序"><span class="nav-number">6.</span> <span class="nav-text">MPI 实例之 奇偶排序</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#串行代码-2"><span class="nav-number">6.1.</span> <span class="nav-text">串行代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#并行代码-2"><span class="nav-number">6.2.</span> <span class="nav-text">并行代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结果对比-2"><span class="nav-number">6.3.</span> <span class="nav-text">结果对比</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MPI-实例之-矩阵向量乘法"><span class="nav-number">7.</span> <span class="nav-text">MPI 实例之 矩阵向量乘法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#数据生成代码"><span class="nav-number">7.1.</span> <span class="nav-text">数据生成代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#串行代码-3"><span class="nav-number">7.2.</span> <span class="nav-text">串行代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#并行代码-3"><span class="nav-number">7.3.</span> <span class="nav-text">并行代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结果对比-3"><span class="nav-number">7.4.</span> <span class="nav-text">结果对比</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#实验结论"><span class="nav-number">8.</span> <span class="nav-text">实验结论</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#补充：几个小坑"><span class="nav-number">9.</span> <span class="nav-text">补充：几个小坑</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">10.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2016 - 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ptkin</span>
+</div>
+
+
+        
+
+<div class="busuanzi-count">
+
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+
+  
+  
+</div>
+
+
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.0.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.0.2"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.2"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+  
+  
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length == 0) {
+       search_path = "search.xml";
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    function proceedsearch() {
+      $("body").append('<div class="popoverlay">').css('overflow', 'hidden');
+      $('.popup').toggle();
+
+    }
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+    'use strict';
+    $.ajax({
+        url: path,
+        dataType: "xml",
+        async: true,
+        success: function( xmlResponse ) {
+            // get the contents from search data
+            isfetched = true;
+            $('.popup').detach().appendTo('.header-inner');
+            var datas = $( "entry", xmlResponse ).map(function() {
+                return {
+                    title: $( "title", this ).text(),
+                    content: $("content",this).text(),
+                    url: $( "url" , this).text()
+                };
+            }).get();
+            var $input = document.getElementById(search_id);
+            var $resultContent = document.getElementById(content_id);
+            $input.addEventListener('input', function(){
+                var matchcounts = 0;
+                var str='<ul class=\"search-result-list\">';
+                var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+                $resultContent.innerHTML = "";
+                if (this.value.trim().length > 1) {
+                // perform local searching
+                datas.forEach(function(data) {
+                    var isMatch = false;
+                    var content_index = [];
+                    var data_title = data.title.trim().toLowerCase();
+                    var data_content = data.content.trim().replace(/<[^>]+>/g,"").toLowerCase();
+                    var data_url = data.url;
+                    var index_title = -1;
+                    var index_content = -1;
+                    var first_occur = -1;
+                    // only match artiles with not empty titles and contents
+                    if(data_title != '') {
+                        keywords.forEach(function(keyword, i) {
+                            index_title = data_title.indexOf(keyword);
+                            index_content = data_content.indexOf(keyword);
+                            if( index_title >= 0 || index_content >= 0 ){
+                                isMatch = true;
+								if (i == 0) {
+                                    first_occur = index_content;
+                                }
+                            } 
+							
+                        });
+                    }
+                    // show search results
+                    if (isMatch) {
+                        matchcounts += 1;
+                        str += "<li><a href='"+ data_url +"' class='search-result-title'>"+ data_title +"</a>";
+                        var content = data.content.trim().replace(/<[^>]+>/g,"");
+                        if (first_occur >= 0) {
+                            // cut out 100 characters
+                            var start = first_occur - 20;
+                            var end = first_occur + 80;
+                            if(start < 0){
+                                start = 0;
+                            }
+                            if(start == 0){
+                                end = 50;
+                            }
+                            if(end > content.length){
+                                end = content.length;
+                            }
+                            var match_content = content.substring(start, end);
+                            // highlight all keywords
+                            keywords.forEach(function(keyword){
+                                var regS = new RegExp(keyword, "gi");
+                                match_content = match_content.replace(regS, "<b class=\"search-keyword\">"+keyword+"</b>");
+                            });
+
+                            str += "<p class=\"search-result\">" + match_content +"...</p>"
+                        }
+                        str += "</li>";
+                    }
+                })};
+                str += "</ul>";
+                if (matchcounts == 0) { str = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>' }
+                if (keywords == "") { str = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>' }
+                $resultContent.innerHTML = str;
+            });
+            proceedsearch();
+        }
+    });}
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched == false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+
+    });
+
+    $('.popup-btn-close').click(function(e){
+      $('.popup').hide();
+      $(".popoverlay").remove();
+      $('body').css('overflow', '');
+    });
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+  </script>
+
+
+  
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+  </script>
+
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+      for (i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+    });
+  </script>
+  <script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+
+  
+
+  
+
+  
+
+
+</body>
+</html>

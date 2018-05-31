@@ -1,0 +1,1211 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="JStorm,Maven,ZooKeeper," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.2" />
+
+
+
+
+
+
+<meta name="description" content="心血来潮报名参加了 2016 年阿里中间件性能挑战赛 - “工程”视角技术大赛，但是被学校里的其他事情一直拖着，这几天花了两三天时间把比赛相关的资料摸索了一下尝试着配置，然后就临近比赛结束了= =。一想到距离并行程序设计的大作业/软件实训提交还有三天时间，还有实验室的活儿压着，无奈之下还是决定先把中间件放放吧。把摸索过程中的资料放上来，以后重拾起来也方便一些。">
+<meta name="keywords" content="JStorm,Maven,ZooKeeper">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2016年阿里中间件性能挑战赛-“工程”视角技术大赛">
+<meta property="og:url" content="http://ptkin.com/2016_ali_middleware_race/index.html">
+<meta property="og:site_name" content="ptblog">
+<meta property="og:description" content="心血来潮报名参加了 2016 年阿里中间件性能挑战赛 - “工程”视角技术大赛，但是被学校里的其他事情一直拖着，这几天花了两三天时间把比赛相关的资料摸索了一下尝试着配置，然后就临近比赛结束了= =。一想到距离并行程序设计的大作业/软件实训提交还有三天时间，还有实验室的活儿压着，无奈之下还是决定先把中间件放放吧。把摸索过程中的资料放上来，以后重拾起来也方便一些。">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="http://7xrybf.com1.z0.glb.clouddn.com/20160709_01_00.png?imageMogr2/format/jpg">
+<meta property="og:image" content="http://7xrybf.com1.z0.glb.clouddn.com/20160709_01_01_jstorm_topo.png">
+<meta property="og:image" content="http://7xrybf.com1.z0.glb.clouddn.com/20160709_01_02_jstorm_msg.jpeg">
+<meta property="og:image" content="http://7xrybf.com1.z0.glb.clouddn.com/20160709_01_03_jstorm_arch.jpeg">
+<meta property="og:updated_time" content="2018-05-31T05:30:21.193Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="2016年阿里中间件性能挑战赛-“工程”视角技术大赛">
+<meta name="twitter:description" content="心血来潮报名参加了 2016 年阿里中间件性能挑战赛 - “工程”视角技术大赛，但是被学校里的其他事情一直拖着，这几天花了两三天时间把比赛相关的资料摸索了一下尝试着配置，然后就临近比赛结束了= =。一想到距离并行程序设计的大作业/软件实训提交还有三天时间，还有实验室的活儿压着，无奈之下还是决定先把中间件放放吧。把摸索过程中的资料放上来，以后重拾起来也方便一些。">
+<meta name="twitter:image" content="http://7xrybf.com1.z0.glb.clouddn.com/20160709_01_00.png?imageMogr2/format/jpg">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '81814746bec8c1bf6b2fc39fe555ee19',
+      author: 'ptkin'
+    }
+  };
+</script>
+
+
+
+
+  <link rel="canonical" href="http://ptkin.com/2016_ali_middleware_race/"/>
+
+
+  <title> 2016年阿里中间件性能挑战赛-“工程”视角技术大赛 | ptblog </title>
+</head>
+
+<body itemscope itemtype="//schema.org/WebPage" lang="en">
+
+  
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-77758254-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+
+
+
+
+  <div style="display: none;">
+    <script src="//s95.cnzz.com/z_stat.php?id=1259136479&web_id=1259136479" language="JavaScript"></script>
+  </div>
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="//schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">ptblog</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-wiki">
+          <a href="/wiki" rel="section">
+            
+            Wiki
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+            About
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup">
+ <span class="search-icon fa fa-search"></span>
+ <input type="text" id="local-search-input">
+ <div id="local-search-result"></div>
+ <span class="popup-btn-close">close</span>
+</div>
+
+
+    </div>
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="//schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                2016年阿里中间件性能挑战赛-“工程”视角技术大赛
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">Posted on</span>
+            <time itemprop="dateCreated" datetime="2016-07-09T10:28:58+08:00" content="2016-07-09">
+              2016-07-09
+            </time>
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><img src="http://7xrybf.com1.z0.glb.clouddn.com/20160709_01_00.png?imageMogr2/format/jpg" alt=""></p>
+<p>心血来潮报名参加了 <a href="https://tianchi.shuju.aliyun.com/programming/introduction.htm?spm=5176.100068.5678.1.q6O0jM&amp;raceId=231533" target="_blank" rel="noopener">2016 年阿里中间件性能挑战赛 - “工程”视角技术大赛</a>，但是被学校里的其他事情一直拖着，这几天花了两三天时间把比赛相关的资料摸索了一下尝试着配置，然后就临近比赛结束了= =。一想到距离并行程序设计的大作业/软件实训提交还有三天时间，还有实验室的活儿压着，无奈之下还是决定先把中间件放放吧。把摸索过程中的资料放上来，以后重拾起来也方便一些。</p>
+<a id="more"></a>
+<h1 id="学习储备"><a href="#学习储备" class="headerlink" title="学习储备"></a>学习储备</h1><p>本节已包括以下学习内容：</p>
+<ol>
+<li>Maven</li>
+<li>JStorm</li>
+<li>ZooKeeper</li>
+</ol>
+<p>此外还应学习阿里开发的以下两个系统/中间件：</p>
+<ol>
+<li>分布式 key / value 存储系统 <a href="http://code.taobao.org/p/tair/wiki/index/?spm=5176.100068.555.4.y8uKcw" target="_blank" rel="noopener">Tail</a> </li>
+<li>分布式、队列模型的消息中间件 <a href="https://github.com/alibaba/RocketMQ?spm=5176.100068.555.5.y8uKcw" target="_blank" rel="noopener">RocketMQ</a></li>
+</ol>
+<h2 id="Maven"><a href="#Maven" class="headerlink" title="Maven"></a>Maven</h2><p>软件项目管理+自动化构建的工具。Maven 最主要的功能在于 <strong>包依赖管理</strong>。</p>
+<p>看过以下几篇参考资料即可一边摸索一边实战：</p>
+<ol>
+<li><a href="https://zhuanlan.zhihu.com/p/20724216?refer=nonesuccess" target="_blank" rel="noopener">如何通俗地理解 Gradle？ - 从一事无成到仅成一事 - 知乎专栏</a></li>
+<li><a href="https://www.zhihu.com/question/29338218/answer/51293828" target="_blank" rel="noopener">gradle和maven有什么用？分别有什么区别？ - EZLippi 的回答 - 知乎</a></li>
+<li><a href="http://www.oracle.com/technetwork/cn/community/java/apache-maven-getting-started-1-406235-zhs.html" target="_blank" rel="noopener">Apache Maven 入门篇 ( 上 ) - oracle</a></li>
+<li><a href="http://www.oracle.com/technetwork/cn/community/java/apache-maven-getting-started-2-405568-zhs.html" target="_blank" rel="noopener">Apache Maven 入门篇 ( 下 ) - oracle</a></li>
+</ol>
+<p>如果英语过关的话官网适合你： <a href="http://maven.apache.org/" target="_blank" rel="noopener">Welcome to Apache Maven</a></p>
+<h2 id="JStorm"><a href="#JStorm" class="headerlink" title="JStorm"></a>JStorm</h2><p>参考 <a href="https://github.com/alibaba/jstorm/wiki/JStorm-Chinese-Documentation?spm=5176.bbsr277544.0.0.hmN3eX" target="_blank" rel="noopener">JStorm 文档</a>。</p>
+<h3 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h3><p>JStorm 是一个类似 Hadoop MapReduce 的系统， 用户按照指定的接口实现一个任务，然后将这个任务递交给 JStorm 系统，JStorm 将这个任务跑起来，并且按 7 * 24 小时运行起来，一旦中间一个 Worker 发生意外故障， 调度器立即分配一个新的 Worker 替换这个失效的 Worker。因此</p>
+<ul>
+<li>从应用的角度，JStorm 应用是一种遵守某种编程规范的分布式应用</li>
+<li>从系统角度，JStorm 是一套类似 MapReduce 的调度系统</li>
+<li>从数据的角度，JStorm 是一套基于流水线的消息处理机制</li>
+</ul>
+<p>下面分别介绍 JStorm 的 <code>组件</code>、<code>组件的接口</code>、<code>调度和执行</code>、<code>消息的通信</code>、<code>实时计算结果输出</code> 这五个方面。</p>
+<h3 id="（1）组件"><a href="#（1）组件" class="headerlink" title="（1）组件"></a>（1）组件</h3><ul>
+<li><strong>大致结构图：</strong></li>
+</ul>
+<p><img src="http://7xrybf.com1.z0.glb.clouddn.com/20160709_01_01_jstorm_topo.png" alt=""></p>
+<p>在 JStorm 的 topology 中，有两种组件：</p>
+<table>
+<thead>
+<tr>
+<th>组件</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>spout</strong></td>
+<td>spout 代表输入的数据源，这个数据源可以是任意的，比如说 kafaka，DB，HBase，甚至是 HDFS 等，JStorm 从这个数据源中不断地读取数据，然后发送到下游的 bolt 中进行处理。</td>
+</tr>
+<tr>
+<td><strong>bolt</strong></td>
+<td>bolt 代表处理逻辑，bolt 收到消息之后，对消息做处理（即执行用户的业务逻辑），处理完以后，既可以将处理后的消息继续发送到下游的 bolt，也可以直接结束。通常最后一个 bolt 会做一些数据的存储工作，比如将实时计算出来的数据写入 DB、HBase 等，以供前台业务进行查询和展现。</td>
+</tr>
+</tbody>
+</table>
+<p>每一个 topology，既可以有多个 spout，代表同时从多个数据源接收消息，也可以多个 bolt，来执行不同的业务逻辑。</p>
+<h3 id="（2）组件的接口"><a href="#（2）组件的接口" class="headerlink" title="（2）组件的接口"></a>（2）组件的接口</h3><ul>
+<li><strong>JStorm 中的数据流大致示意如下：</strong></li>
+</ul>
+<p><img src="http://7xrybf.com1.z0.glb.clouddn.com/20160709_01_02_jstorm_msg.jpeg" alt=""></p>
+<table>
+<thead>
+<tr>
+<th>组件</th>
+<th>接口</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>spout</td>
+<td><strong>nextTuple</strong></td>
+<td>获取下一条消息。执行时，可以理解成 JStorm 框架会不停地调这个接口，以从数据源拉取数据并往 bolt 发送数据。</td>
+</tr>
+<tr>
+<td>bolt</td>
+<td><strong>execute</strong></td>
+<td>用户用来处理业务逻辑。</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><p><strong>tuple</strong></p>
+<p>  JStorm 将流中数据抽象为 tuple，一个 tuple 就是一个值列表 value list，list 中的每个 value 都有一个 name，并且该 value 可以是基本类型，字符类型，字节数组等，当然也可以是其他可序列化的类型。拓扑的每个节点都要说明它所发射出的元组的字段的 name，其他节点只需要订阅该 name 就可以接收处理。</p>
+</li>
+</ul>
+<h3 id="（3）调度和执行"><a href="#（3）调度和执行" class="headerlink" title="（3）调度和执行"></a>（3）调度和执行</h3><p>JStorm 从设计的角度，就是一个典型的调度系统。架构可以参考下图：</p>
+<ul>
+<li>JStorm 的架构图</li>
+</ul>
+<p><img src="http://7xrybf.com1.z0.glb.clouddn.com/20160709_01_03_jstorm_arch.jpeg" alt=""></p>
+<ul>
+<li>相关角色</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>概念</th>
+<th>简述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>component</td>
+<td>组件，spout 或者 bolt。</td>
+</tr>
+<tr>
+<td>task</td>
+<td>执行线程。每个 task 都是 component 的实现。</td>
+</tr>
+<tr>
+<td>worker</td>
+<td>操作系统执行进程，分布到一个集群的一台或者多台机器上并行执行。每个 worker 可以有多个 task。</td>
+</tr>
+<tr>
+<td>Supervisor</td>
+<td>作为worker的代理角色，负责杀死worker和运行worker</td>
+</tr>
+<tr>
+<td>Nimbus</td>
+<td>调度器</td>
+</tr>
+<tr>
+<td>ZooKeeper</td>
+<td>协调者</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>用户在提交一个 topology 的时候，会指定以下的一些执行参数：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>参数说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>总worker数</strong></td>
+<td>即总的进程数。根据配置，JStorm有可能会添加内部的组件，如 __acker 或者 __topology_master（都是特殊的 bolt），这样会导致最终执行的进程数大于用户指定的进程数。<br>默认情况下，如果用户设置的 worker 数小于 10 个，那么 __topology_master 只是作为一个 task 存在，不独占 worker；如果用户设置的 worker 数量大于等于 10 个，那么 __topology_master 作为一个 task 将独占一个 worker。</td>
+</tr>
+<tr>
+<td><strong>每个component的并行度</strong></td>
+<td>每个 spout 和 bolt 都可以单独指定一个并行度（parallelism），代表同时有多少个线程（task）来执行这个 spout 或 bolt。<br>JStorm 中，每一个执行线程都有一个 task id，它从 1 开始递增。task id 不一定从 spout 开始然后到 bolt ，但是每一个 component 内的 task id 一定是连续的。</td>
+</tr>
+<tr>
+<td><strong>每个component之间的关系</strong></td>
+<td>即用户需要去指定每个 spout（或中间的 bolt）发出的数据应该由哪些 bolt 来处理。<br>JStorm 使用了一种均匀的调度算法，例如我们指定了 worker 数为 3，总的 component 并行度之和（总线程数）为 15，那么每个 worker 各执行 5 个 task。</td>
+</tr>
+</tbody>
+</table>
+<p>在一个 topology 的运行过程中，如果一个进程（worker）挂掉了，JStorm 检测到之后，会不断尝试重启这个进程，这就是 7 * 24 小时不间断执行的概念。</p>
+<h3 id="（4）消息的通信"><a href="#（4）消息的通信" class="headerlink" title="（4）消息的通信"></a>（4）消息的通信</h3><p>从 component 发送消息的时候，JStorm 会计算出消息要发送的目标 task id 列表，然后看目标 task id 是在本进程中，还是其他进程中，如果是本进程中，那么就可以直接走进程内部通信（如直接将这个消息放入本进程中目标 task 的执行队列中）；如果是跨进程，那么 JStorm 会使用 netty 来将消息发送到目标 task 中。</p>
+<h3 id="（5）实时计算结果输出"><a href="#（5）实时计算结果输出" class="headerlink" title="（5）实时计算结果输出"></a>（5）实时计算结果输出</h3><p>JStorm 是 7 * 24 小时运行的，外部系统如果需要查询某个特定时间点的处理结果，不需要直接请求 JStorm（当然，DRPC 可以支持这种需求，但是性能并不是太好）。一般来说，在 JStorm 的 spout 或 bolt 中，都会有一个定时往外部存储写计算结果的逻辑，这样数据可以按照业务需求被实时或者近实时地存储起来，然后直接查询外部存储中的计算结果即可。</p>
+<h2 id="ZooKeeper"><a href="#ZooKeeper" class="headerlink" title="ZooKeeper"></a>ZooKeeper</h2><p>本节不会详细介绍，所以请阅读参考资料：</p>
+<ul>
+<li>官网：<a href="http://zookeeper.apache.org/" target="_blank" rel="noopener">Apache ZooKeeper - Home</a></li>
+<li>一名作者写的一系列博客：<ul>
+<li><a href="http://www.cnblogs.com/yuyijq/p/3391945.html" target="_blank" rel="noopener">Zookeeper–Zookeeper是什么 - 横刀天笑 - 博客园</a></li>
+<li><a href="http://www.cnblogs.com/yuyijq/p/3424473.html" target="_blank" rel="noopener">Zookeeper-Zookeeper可以干什么 - 横刀天笑 - 博客园</a></li>
+<li>…</li>
+</ul>
+</li>
+</ul>
+<p>Google 的三篇论文影响了很多很多人，也影响了很多很多系统。这三篇论文一直是分布式领域传阅的经典。根据 MapReduce，于是我们有了 Hadoop ；根据 GFS，于是我们有了 HDFS；根据 BigTable，于是我们有了 HBase。而在这三篇论文里都提及 Google 的一个 lock service — Chubby，于是我们有了 Zookeeper。</p>
+<p>下面是官网描述：</p>
+<blockquote>
+<p>Apache ZooKeeper is an effort to develop and maintain an open-source server which <strong>enables highly reliable distributed coordination</strong>.</p>
+</blockquote>
+<blockquote>
+<p><strong>ZooKeeper is a centralized service for maintaining configuration information, naming, providing distributed synchronization, and providing group services.</strong> All of these kinds of services are used in some form or another by distributed applications. Each time they are implemented there is a lot of work that goes into fixing the bugs and race conditions that are inevitable. Because of the difficulty of implementing these kinds of services, applications initially usually skimp on them ,which make them brittle in the presence of change and difficult to manage. Even when done correctly, different implementations of these services lead to management complexity when the applications are deployed.</p>
+</blockquote>
+<p>大意是 ZooKeeper 可以 <strong>提供高可依赖的分布式协调服务</strong>。主要工作包括：</p>
+<ol>
+<li>配置管理（Maintaining Configuration Information）</li>
+<li>命名服务（Naming）</li>
+<li>提供分布式同步（Providing Distributed synchronization）</li>
+<li>提供集群管理（Providing Group Services）</li>
+</ol>
+<h1 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h1><h2 id="步骤"><a href="#步骤" class="headerlink" title="步骤"></a>步骤</h2><p>建议直接看官方： <a href="https://github.com/alibaba/jstorm/wiki/%E5%A6%82%E4%BD%95%E5%AE%89%E8%A3%85" target="_blank" rel="noopener">如何安装 · alibaba/jstorm Wiki</a>。</p>
+<p>1.从 <a href="https://github.com/alibaba/jstorm/wiki/Downloads" target="_blank" rel="noopener">Downloads</a> 下载 JStorm 的 relase 包</p>
+<p>2.搭建 Zookeeper 集群</p>
+<ul>
+<li>安装：<a href="http://www.cnblogs.com/linjiqin/archive/2013/03/16/2962597.html" target="_blank" rel="noopener">ZooKeeper安装与配置 - Ruthless - 博客园</a></li>
+<li>配置：<a href="http://blog.csdn.net/hi_kevin/article/details/7089358" target="_blank" rel="noopener">ZooKeeper的安装 - hi_kevin的专栏 - 博客频道 - CSDN.NET</a></li>
+</ul>
+<p>3.安装 Python 2.6</p>
+<p>4.安装 Java</p>
+<ul>
+<li>JDK 1.7 ：<a href="http://www.oracle.com/technetwork/java/javase/downloads/jdk7-downloads-1880260.html" target="_blank" rel="noopener">官网</a></li>
+<li>错误：<a href="http://www.tuicool.com/articles/rimqYz" target="_blank" rel="noopener">Error occurred during initialization of VM java/lang/NoClassDefFoundError: java/lang/Object</a>    </li>
+</ul>
+<p>5.配置 <code>$JSTORM_HOME/conf/storm.yaml</code>。配置项：</p>
+<table>
+<thead>
+<tr>
+<th>配置项</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>storm.zookeeper.servers</td>
+<td>表示 zookeeper 的地址</td>
+</tr>
+<tr>
+<td>nimbus.host</td>
+<td>表示 nimbus 的地址</td>
+</tr>
+<tr>
+<td>storm.zookeeper.root</td>
+<td>表示 JStorm 在 zookeeper 中的根目录，当多个 JStorm 共享一个 zookeeper 时，需要设置该选项，默认即为 “/jstorm”</td>
+</tr>
+<tr>
+<td>storm.local.dir</td>
+<td>表示 JStorm 临时数据存放目录，需要保证 JStorm 程序对该目录有写权限</td>
+</tr>
+<tr>
+<td>java.library.path</td>
+<td>Zeromq 和 java zeromq library 的安装目录，默认 “/usr/local/lib:/opt/local/lib:/usr/lib”</td>
+</tr>
+<tr>
+<td>supervisor.slots.ports</td>
+<td>表示 Supervisor 提供的端口 Slot 列表，注意不要和其他端口发生冲突，默认是 68xx，而 Storm 的是 67xx</td>
+</tr>
+<tr>
+<td>topology.enable.classloader</td>
+<td>默认为 false，关闭 classloader，如果应用的 jar 与 JStorm 的依赖的 jar 发生冲突，比如应用使用 thrift9，但 jstorm 使用 thrift7 时，就需要打开 classloader。建议在集群级别上默认关闭，在具体需要隔离的 topology 上打开这个选项。</td>
+</tr>
+</tbody>
+</table>
+<p>6.搭建 Web UI</p>
+<p>7.启动 JStorm 集群</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><strong>比赛相关</strong></p>
+<blockquote>
+<ul>
+<li><a href="https://tianchi.shuju.aliyun.com/programming/information.htm?spm=5176.100067.5678.2.8c0UqE&amp;raceId=231533" target="_blank" rel="noopener">阿里中间件性能挑战赛 赛题与数据</a></li>
+<li><a href="https://bbs.aliyun.com/read/277544.html?spm=5176.100068.555.2.Yu4B3A" target="_blank" rel="noopener">阿里中间件性能挑战赛重要学习资料|天池竞赛 - 开发者论坛</a></li>
+</ul>
+</blockquote>
+<p><strong>官方文档</strong></p>
+<blockquote>
+<ul>
+<li><a href="http://maven.apache.org/guides/index.html" target="_blank" rel="noopener">Maven – Maven Documentation</a></li>
+<li><a href="https://github.com/alibaba/jstorm/wiki/JStorm-Chinese-Documentation?spm=5176.bbsr277544.0.0.hmN3eX" target="_blank" rel="noopener">JStorm Chinese Documentation</a></li>
+<li><a href="http://zookeeper.apache.org/doc/" target="_blank" rel="noopener">ZooKeeper Documentation</a></li>
+<li><a href="http://code.taobao.org/p/tair/wiki/index/?spm=5176.100068.555.4.y8uKcw" target="_blank" rel="noopener">Tail</a> </li>
+<li><a href="https://github.com/alibaba/RocketMQ?spm=5176.100068.555.5.y8uKcw" target="_blank" rel="noopener">RocketMQ</a></li>
+</ul>
+</blockquote>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/JStorm/" rel="tag">#JStorm</a>
+          
+            <a href="/tags/Maven/" rel="tag">#Maven</a>
+          
+            <a href="/tags/ZooKeeper/" rel="tag">#ZooKeeper</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/parallel_programming_openmp/" rel="next" title="并行程序设计(2) OpenMP">
+                <i class="fa fa-chevron-left"></i> 并行程序设计(2) OpenMP
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/linux_notes/" rel="prev" title="Linux Notes">
+                Linux Notes <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="//schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpg"
+               alt="ptkin" />
+          <p class="site-author-name" itemprop="name">ptkin</p>
+          <p class="site-description motion-element" itemprop="description">Do it! Finish it! Now!</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">19</span>
+              <span class="site-state-item-name">posts</span>
+            </a>
+          </div>
+
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">41</span>
+                <span class="site-state-item-name">tags</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-block">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              Links
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://zhuanlan.zhihu.com/ai-insight" title="AI Insight" target="_blank">AI Insight</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://karpathy.github.io/" title="Andrej Karpathy blog" target="_blank">Andrej Karpathy blog</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://zh.mxnet.io/blog/" title="ApacheMXNet" target="_blank">ApacheMXNet</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://cenalulu.github.io/" title="cenalulu'S Tech Blog" target="_blank">cenalulu'S Tech Blog</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://chrisalbon.com/" title="Chris Albon" target="_blank">Chris Albon</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://blog.codinglabs.org/" title="CodingLabs" target="_blank">CodingLabs</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://colah.github.io/" title="colah's blog" target="_blank">colah's blog</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://distill.pub/" title="Distill" target="_blank">Distill</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://saicoco.github.io/" title="Fix you" target="_blank">Fix you</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.figotan.org/" title="FIGOTAN's Blog" target="_blank">FIGOTAN's Blog</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://freemind.pluskid.org/" title="Free Mind" target="_blank">Free Mind</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://charlesliuyx.github.io/" title="Go Further" target="_blank">Go Further</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://hahack.com/" title="HaHack" target="_blank">HaHack</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://handong1587.github.io" title="handong1587's blog" target="_blank">handong1587's blog</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://iceory.github.io/" title="iceory's blog" target="_blank">iceory's blog</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.codelast.com/" title="Intent & Focused" target="_blank">Intent & Focused</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://joshua881228.webfactional.com/blog_my-jumble-of-computer-vison_135/" title="JOSHUA'S BLOG" target="_blank">JOSHUA'S BLOG</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://juniperphoton.net/" title="JuniperPhoton's Blog" target="_blank">JuniperPhoton's Blog</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://closure11.com/" title="LHY's World" target="_blank">LHY's World</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://machinelearningmastery.com/" title="Machine Learning Mastery" target="_blank">Machine Learning Mastery</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.cnblogs.com/neopenx/" title="Physcalの大魔導書" target="_blank">Physcalの大魔導書</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://blog.csdn.net/abcjennifer" title="Rachel Zhang" target="_blank">Rachel Zhang</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://ruder.io/" title="Sebastian Ruder" target="_blank">Sebastian Ruder</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://zohead.com/" title="Soul Of Free Loop" target="_blank">Soul Of Free Loop</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://styletin.com/" title="Styletin" target="_blank">Styletin</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://timdettmers.com/" title="Tim Dettmers" target="_blank">Tim Dettmers</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.wildml.com/" title="WildML" target="_blank">WildML</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://dnc1994.com/" title="Wille" target="_blank">Wille</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://program-think.blogspot.com/" title="编程随想" target="_blank">编程随想</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://blog.csdn.net/red_stone1/" title="红色de石头" target="_blank">红色de石头</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://kenengba.com/" title="可能吧" target="_blank">可能吧</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://spaces.ac.cn/" title="科学空间" target="_blank">科学空间</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://coolshell.cn/" title="酷壳" target="_blank">酷壳</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://luolei.org/" title="罗磊" target="_blank">罗磊</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://blog.jimmylv.info/" title="吕立青的博客" target="_blank">吕立青的博客</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.hankcs.com/" title="码农场" target="_blank">码农场</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.fuzihao.org/blog/" title="切问录" target="_blank">切问录</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://perthcharles.github.io/" title="天赋 无与伦比的坚持" target="_blank">天赋 无与伦比的坚持</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://www.dandyweng.com/" title="翁天信" target="_blank">翁天信</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.52nlp.cn/" title="我爱自然语言处理" target="_blank">我爱自然语言处理</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://zhuanlan.zhihu.com/hsmyy" title="无痛的机器学习" target="_blank">无痛的机器学习</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.duanshishi.com/" title="小石头的码疯窝" target="_blank">小石头的码疯窝</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.read.org.cn/" title="战隼的学习探索" target="_blank">战隼的学习探索</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://ccjou.wordpress.com/" title="線代啟示錄" target="_blank">線代啟示錄</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#学习储备"><span class="nav-number">1.</span> <span class="nav-text">学习储备</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Maven"><span class="nav-number">1.1.</span> <span class="nav-text">Maven</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JStorm"><span class="nav-number">1.2.</span> <span class="nav-text">JStorm</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#介绍"><span class="nav-number">1.2.1.</span> <span class="nav-text">介绍</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#（1）组件"><span class="nav-number">1.2.2.</span> <span class="nav-text">（1）组件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#（2）组件的接口"><span class="nav-number">1.2.3.</span> <span class="nav-text">（2）组件的接口</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#（3）调度和执行"><span class="nav-number">1.2.4.</span> <span class="nav-text">（3）调度和执行</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#（4）消息的通信"><span class="nav-number">1.2.5.</span> <span class="nav-text">（4）消息的通信</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#（5）实时计算结果输出"><span class="nav-number">1.2.6.</span> <span class="nav-text">（5）实时计算结果输出</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ZooKeeper"><span class="nav-number">1.3.</span> <span class="nav-text">ZooKeeper</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#环境搭建"><span class="nav-number">2.</span> <span class="nav-text">环境搭建</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#步骤"><span class="nav-number">2.1.</span> <span class="nav-text">步骤</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">3.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2016 - 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ptkin</span>
+</div>
+
+
+        
+
+<div class="busuanzi-count">
+
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+
+  
+  
+</div>
+
+
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.0.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.0.2"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.2"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+  
+  
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length == 0) {
+       search_path = "search.xml";
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    function proceedsearch() {
+      $("body").append('<div class="popoverlay">').css('overflow', 'hidden');
+      $('.popup').toggle();
+
+    }
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+    'use strict';
+    $.ajax({
+        url: path,
+        dataType: "xml",
+        async: true,
+        success: function( xmlResponse ) {
+            // get the contents from search data
+            isfetched = true;
+            $('.popup').detach().appendTo('.header-inner');
+            var datas = $( "entry", xmlResponse ).map(function() {
+                return {
+                    title: $( "title", this ).text(),
+                    content: $("content",this).text(),
+                    url: $( "url" , this).text()
+                };
+            }).get();
+            var $input = document.getElementById(search_id);
+            var $resultContent = document.getElementById(content_id);
+            $input.addEventListener('input', function(){
+                var matchcounts = 0;
+                var str='<ul class=\"search-result-list\">';
+                var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+                $resultContent.innerHTML = "";
+                if (this.value.trim().length > 1) {
+                // perform local searching
+                datas.forEach(function(data) {
+                    var isMatch = false;
+                    var content_index = [];
+                    var data_title = data.title.trim().toLowerCase();
+                    var data_content = data.content.trim().replace(/<[^>]+>/g,"").toLowerCase();
+                    var data_url = data.url;
+                    var index_title = -1;
+                    var index_content = -1;
+                    var first_occur = -1;
+                    // only match artiles with not empty titles and contents
+                    if(data_title != '') {
+                        keywords.forEach(function(keyword, i) {
+                            index_title = data_title.indexOf(keyword);
+                            index_content = data_content.indexOf(keyword);
+                            if( index_title >= 0 || index_content >= 0 ){
+                                isMatch = true;
+								if (i == 0) {
+                                    first_occur = index_content;
+                                }
+                            } 
+							
+                        });
+                    }
+                    // show search results
+                    if (isMatch) {
+                        matchcounts += 1;
+                        str += "<li><a href='"+ data_url +"' class='search-result-title'>"+ data_title +"</a>";
+                        var content = data.content.trim().replace(/<[^>]+>/g,"");
+                        if (first_occur >= 0) {
+                            // cut out 100 characters
+                            var start = first_occur - 20;
+                            var end = first_occur + 80;
+                            if(start < 0){
+                                start = 0;
+                            }
+                            if(start == 0){
+                                end = 50;
+                            }
+                            if(end > content.length){
+                                end = content.length;
+                            }
+                            var match_content = content.substring(start, end);
+                            // highlight all keywords
+                            keywords.forEach(function(keyword){
+                                var regS = new RegExp(keyword, "gi");
+                                match_content = match_content.replace(regS, "<b class=\"search-keyword\">"+keyword+"</b>");
+                            });
+
+                            str += "<p class=\"search-result\">" + match_content +"...</p>"
+                        }
+                        str += "</li>";
+                    }
+                })};
+                str += "</ul>";
+                if (matchcounts == 0) { str = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>' }
+                if (keywords == "") { str = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>' }
+                $resultContent.innerHTML = str;
+            });
+            proceedsearch();
+        }
+    });}
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched == false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+
+    });
+
+    $('.popup-btn-close').click(function(e){
+      $('.popup').hide();
+      $(".popoverlay").remove();
+      $('body').css('overflow', '');
+    });
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+  </script>
+
+
+  
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+  </script>
+
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+      for (i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+    });
+  </script>
+  <script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+
+  
+
+  
+
+  
+
+
+</body>
+</html>

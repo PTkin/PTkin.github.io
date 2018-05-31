@@ -1,0 +1,1110 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Blog,Hexo," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.2" />
+
+
+
+
+
+
+<meta name="description" content="很久之前就用 hexo 搭建过一个个人博客，但是觉得美化太麻烦，就弃了，后来断断续续在 CSDN 上写过几篇博客。最近越来越对其不满，觉得 CSDN 的 Markdown 渲染效果实在不能见人，而且毕竟有广告，所以决定重拾 Hexo 之路，顺便写下这篇博客记录下本次过程，顺便记录下搭建过程中遇到的几个坑。">
+<meta name="keywords" content="Blog,Hexo">
+<meta property="og:type" content="article">
+<meta property="og:title" content="折腾Hexo的搭建">
+<meta property="og:url" content="http://ptkin.com/something_about_build_hexo/index.html">
+<meta property="og:site_name" content="ptblog">
+<meta property="og:description" content="很久之前就用 hexo 搭建过一个个人博客，但是觉得美化太麻烦，就弃了，后来断断续续在 CSDN 上写过几篇博客。最近越来越对其不满，觉得 CSDN 的 Markdown 渲染效果实在不能见人，而且毕竟有广告，所以决定重拾 Hexo 之路，顺便写下这篇博客记录下本次过程，顺便记录下搭建过程中遇到的几个坑。">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="http://7xrybf.com1.z0.glb.clouddn.com/20160518_02_huxblog.png?imageMogr2/format/jpg">
+<meta property="og:image" content="http://7xrybf.com1.z0.glb.clouddn.com/20160513_01_share1.png?imageMogr2/format/jpg">
+<meta property="og:image" content="http://7xrybf.com1.z0.glb.clouddn.com/20160513_02_no_share.png?imageMogr2/format/jpg">
+<meta property="og:image" content="http://7xrybf.com1.z0.glb.clouddn.com/20160513_03_share2.png?imageMogr2/format/jpg">
+<meta property="og:image" content="http://7xrybf.com1.z0.glb.clouddn.com/20160513_02_no_share.png?imageMogr2/format/jpg">
+<meta property="og:updated_time" content="2018-05-31T05:30:21.190Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="折腾Hexo的搭建">
+<meta name="twitter:description" content="很久之前就用 hexo 搭建过一个个人博客，但是觉得美化太麻烦，就弃了，后来断断续续在 CSDN 上写过几篇博客。最近越来越对其不满，觉得 CSDN 的 Markdown 渲染效果实在不能见人，而且毕竟有广告，所以决定重拾 Hexo 之路，顺便写下这篇博客记录下本次过程，顺便记录下搭建过程中遇到的几个坑。">
+<meta name="twitter:image" content="http://7xrybf.com1.z0.glb.clouddn.com/20160518_02_huxblog.png?imageMogr2/format/jpg">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '81814746bec8c1bf6b2fc39fe555ee19',
+      author: 'ptkin'
+    }
+  };
+</script>
+
+
+
+
+  <link rel="canonical" href="http://ptkin.com/something_about_build_hexo/"/>
+
+
+  <title> 折腾Hexo的搭建 | ptblog </title>
+</head>
+
+<body itemscope itemtype="//schema.org/WebPage" lang="en">
+
+  
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-77758254-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+
+
+
+
+  <div style="display: none;">
+    <script src="//s95.cnzz.com/z_stat.php?id=1259136479&web_id=1259136479" language="JavaScript"></script>
+  </div>
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="//schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">ptblog</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-wiki">
+          <a href="/wiki" rel="section">
+            
+            Wiki
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+            About
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup">
+ <span class="search-icon fa fa-search"></span>
+ <input type="text" id="local-search-input">
+ <div id="local-search-result"></div>
+ <span class="popup-btn-close">close</span>
+</div>
+
+
+    </div>
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="//schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                折腾Hexo的搭建
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">Posted on</span>
+            <time itemprop="dateCreated" datetime="2016-05-13T10:43:00+08:00" content="2016-05-13">
+              2016-05-13
+            </time>
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><img src="http://7xrybf.com1.z0.glb.clouddn.com/20160518_02_huxblog.png?imageMogr2/format/jpg" alt=""></p>
+<p>很久之前就用 hexo 搭建过一个个人博客，但是觉得美化太麻烦，就弃了，后来断断续续在 CSDN 上写过几篇博客。最近越来越对其不满，觉得 CSDN 的 Markdown 渲染效果实在不能见人，而且毕竟有广告，所以决定重拾 Hexo 之路，顺便写下这篇博客记录下本次过程，顺便记录下搭建过程中遇到的几个坑。</p>
+<a id="more"></a>
+<hr>
+<h1 id="Hexo-的搭建"><a href="#Hexo-的搭建" class="headerlink" title="Hexo 的搭建"></a>Hexo 的搭建</h1><p>Hexo 是一个快速、简洁且高效的博客框架，即使不会编程，也可能很轻松地上手。如果是程序猿/媛，即使像我这么笨，也只花了半个小时不到就搭建好了一个可以公网访问的个人博客。熟悉之后甚至不要十分钟就能搭起来 ~但是使用 Hexo 写博客需要掌握很简单实用的 <code>Markdown</code> 语法，如果你还不会的话建议先花 1 个小时学习熟悉一下再决定是否使用 Hexo 搭建个人博客吧 ~</p>
+<p>搭建 hexo 的步骤在 <a href="https://hexo.io/zh-cn/" target="_blank" rel="noopener">Hexo官网</a> 的文档里已经描述得非常详尽，这里不赘述。搭建成功之后默认是 <code>landscape</code> 主题，也可以根据自己的审美改换其他主题，可以点击 <a href="http://ptkin.github.io/2016/05/18/%E6%8A%98%E8%85%BEHexo%E7%9A%84%E4%B8%BB%E9%A2%98/" target="_blank" rel="noopener"><strong>这里</strong></a> 查看我的另一篇文章《折腾Hexo的主题》。</p>
+<p>下面上坑。</p>
+<hr>
+<h1 id="hexo-server-不能本地访问"><a href="#hexo-server-不能本地访问" class="headerlink" title="hexo server 不能本地访问"></a>hexo server 不能本地访问</h1><p>有以下几种可能：</p>
+<ol>
+<li><p>忘记运行官方文档中的部分命令。例如：</p>
+<pre><code>hexo init &lt;folder&gt;
+cd &lt;folder&gt;
+npm install
+</code></pre><p> 建议先重新浏览官方文档查看是否按照其指示操作。</p>
+</li>
+<li><p>没有安装<code>server</code>模块（Hexo 3 起不自动安装）。我们可以手动安装：</p>
+<pre><code>npm install hexo-server --save
+</code></pre></li>
+<li><p>本地主机端口被占用。我们运行命令时可以指定本地端口如下：</p>
+<pre><code>hexo server -p 5000
+</code></pre><p> 指定了端口 5000 。</p>
+</li>
+<li><p>检查代理设置，假如使用代理访问，自然出错，关闭即可。例如当时我就是挂着全局科学上网的 ss，结果 = =    </p>
+</li>
+</ol>
+<hr>
+<h1 id="ERROR-Process-failed-layout-partials-DS-Store"><a href="#ERROR-Process-failed-layout-partials-DS-Store" class="headerlink" title="ERROR Process failed: layout/_partials/.DS_Store"></a>ERROR Process failed: layout/_partials/.DS_Store</h1><p><code>.DS_Store</code> 是 OSX 保存文件夹的自定义属性的隐藏文件。</p>
+<p>这里报错可能是因为我们在配置的过程中不小心改动了什么却没有清除缓存之类的错误，这个文件不是很重要，所以清除即可，清除之后会重新生成。</p>
+<p>进入我们使用的主题文件夹，然后根据报错的路径 <code>layout/_partials/</code> 进入该文件夹，然后执行下面命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rm -rf .DS_Store</span><br></pre></td></tr></table></figure>
+<p>即可删除该文件。</p>
+<hr>
+<h1 id="自定义文章的-rul"><a href="#自定义文章的-rul" class="headerlink" title="自定义文章的 rul"></a>自定义文章的 rul</h1><p>假如我有一篇文章，标题是 <code>将Ubuntu安装到移动硬盘</code>，创建日期是 <code>2016-05-15</code>，那么生成静态博客之后访问该文章的 url 一般是</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:<span class="comment">//ptkin.github.io/2016/05/15/将Ubuntu安装到移动硬盘</span></span><br></pre></td></tr></table></figure>
+<p>在浏览器中查看该网页时地址栏也是这样显示，但是当我们复制网址，发送到其他地方（例如微信分享）的时候，就会变成下面这个样子</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:<span class="comment">//ptkin.github.io/2016/05/15/%E5%B0%86Ubuntu%E5%AE%89%E8%A3%85%E5%88%B0%E7%A7%BB%E5%8A%A8%E7%A1%AC%E7%9B%98/</span></span><br></pre></td></tr></table></figure>
+<p>为什么会这样？简单来说就是由于 URL 中只允许使用规定范围内的字符，而中文恰恰不在其中=。=所以浏览器会对其做一定的编码处理，就变成了这个样子。</p>
+<blockquote>
+<p>对于非 ASCII 字符，需要使用 ASCII 字符集的超集进行编码得到相应的字节，然后对每个字节执行百分号编码。对于 Unicode 字符，RFC 文档建议使用 UTF-8 对其进行编码得到相应的字节，然后对每个字节执行百分号编码。如 “<code>中文</code>” 使用 UTF-8 字符集得到的字节为 <code>0xE4 0xB8 0xAD 0xE6 0x96 0x87</code>，经过 Url 编码之后得到 <code>%E4%B8%AD%E6%96%87</code>。</p>
+<p>如果要深究这个编码的问题可以参照 <a href="http://www.imkevinyang.com/2009/08/%E8%AF%A6%E8%A7%A3javascript%E4%B8%AD%E7%9A%84url%E7%BC%96%E8%A7%A3%E7%A0%81.html" target="_blank" rel="noopener">详解Javascript中的Url编码/解码 | 简单生活 — Kevin Yang的博客</a></p>
+</blockquote>
+<p><strong>那么问题来了</strong></p>
+<p>当我分享一个网址的时候，假如我分享的网址为 <strong><a href="http://ptkin.github.io/2016/05/15/将Ubuntu安装到移动硬盘" target="_blank" rel="noopener">http://ptkin.github.io/2016/05/15/将Ubuntu安装到移动硬盘</a></strong>，那么别人(例如在微信中)点击该链接则会打开链接 <strong><a href="http://ptkin.github.io/2016/05/15/" target="_blank" rel="noopener">http://ptkin.github.io/2016/05/15/</a></strong>，也就是说，后面的 <strong>将Ubuntu安装到移动硬盘</strong> 没有被识别为网址的一部分！此时打开的网址自然会 <strong>404 not found</strong>。</p>
+<p>那么如果我直接发送编码之后的网址 <strong><a href="http://ptkin.github.io/2016/05/15/%E5%B0%86Ubuntu%E5%AE%89%E8%A3%85%E5%88%B0%E7%A7%BB%E5%8A%A8%E7%A1%AC%E7%9B%98/" target="_blank" rel="noopener">http://ptkin.github.io/2016/05/15/%E5%B0%86Ubuntu%E5%AE%89%E8%A3%85%E5%88%B0%E7%A7%BB%E5%8A%A8%E7%A1%AC%E7%9B%98/</a></strong> 呢？你惊喜地发现可以正常地打开，然后沮丧地发现</p>
+<p><strong>太！长！了！</strong></p>
+<p>统计一下，从 48 个字符升级到了 113 个字符 = =</p>
+<p><strong>那么怎么解决这个问题？</strong></p>
+<h2 id="方法一："><a href="#方法一：" class="headerlink" title="方法一："></a>方法一：</h2><p><strong>使用 <a href="http://sina.lt/" target="_blank" rel="noopener">新浪短网址服务</a> 将原本的超长 url 缩略成为很短的链接。</strong></p>
+<p>例如我原本的长度为 113 的 url 使用该服务之后缩略成为长度为 20 的短链接：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:<span class="comment">//t.cn/R5b9Zxu</span></span><br></pre></td></tr></table></figure>
+<p>但是假如使用这种方法，那么生成的短链接根本无法看出原本的链接，所以还存在一个辨识度不高的问题。</p>
+<h2 id="方法二："><a href="#方法二：" class="headerlink" title="方法二："></a>方法二：</h2><p>根据 Hexo 官方文档的 <a href="https://hexo.io/zh-cn/docs/permalinks.html" target="_blank" rel="noopener">永久链接（Permalinks）</a> 这一节，我们可以直接自定义每篇文章的 url。细节请直接查看官方文档，这里只记录我自己的做法。</p>
+<ol>
+<li><p>打开 <code>_config.yml</code> Hexo 配置文件，修改 <code>permalink</code> 字段为自己想要的 url 格式（注意下面例子中的 <code>en_title</code> 也可以是别的，只要在配置文件和文章开头对应即可）</p>
+<pre><code>permalink: :en_title/
+</code></pre></li>
+<li><p>在每篇文章的 <code>Front-matter</code> 中增加一行指定 <code>en_title</code>。例如</p>
+<pre><code>en_title: install_ubuntu_to_ssd
+</code></pre></li>
+<li><p>生成静态博客之后发现该文章的 url 已经变成了</p>
+ <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:<span class="comment">//ptkin.github.io/install_ubuntu_to_ssd/</span></span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<hr>
+<h1 id="修改新建文章的默认-Front-matter"><a href="#修改新建文章的默认-Front-matter" class="headerlink" title="修改新建文章的默认 Front-matter"></a>修改新建文章的默认 Front-matter</h1><p>每次新建文章都会在头部有这些信息：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">---</span><br><span class="line">title: test</span><br><span class="line">date: <span class="number">2016</span><span class="number">-06</span><span class="number">-04</span> <span class="number">14</span>:<span class="number">43</span>:<span class="number">53</span></span><br><span class="line">tags:</span><br><span class="line">---</span><br></pre></td></tr></table></figure>
+<p>但是我们有时候可能想要自己修改一下，例如加上英文标题 <code>en_title</code>、类别 <code>categoriesd</code> 等等，我们当然不能每次都自己手动加啊，其实只要修改一下模板文件夹 <code>scaffolds</code> 中的文章模板即可。如果是使用 <code>new</code> 来新建文章的话，使用的是 <code>post.md</code> 模板。我们打开它，长这个样子：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">---</span><br><span class="line">title: &#123;&#123; title &#125;&#125;</span><br><span class="line">date: &#123;&#123; date &#125;&#125;</span><br><span class="line">tags:</span><br><span class="line">---</span><br></pre></td></tr></table></figure>
+<p>我们只要根据自己需要来修改即可。</p>
+<p>例如我想为我的文章自定义 url（本文章的前文有提到这个需求），url 中主要参照的是我文章的英文标题，但是如果我没有给英文标题，那就使用中文标题。那么我就修改一下模板，成为下面这个样子：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">---</span><br><span class="line">title: &#123;&#123; title &#125;&#125;</span><br><span class="line">en_title: &#123;&#123; title &#125;&#125;</span><br><span class="line">date: &#123;&#123; date &#125;&#125;</span><br><span class="line">tags:</span><br><span class="line">---</span><br></pre></td></tr></table></figure>
+<p>新建文章 <code>hexo new test</code>，打开 <code>test.md</code> 可以看到：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">---</span><br><span class="line">title: test3</span><br><span class="line">en_title: test3</span><br><span class="line">date: <span class="number">2016</span><span class="number">-06</span><span class="number">-04</span> <span class="number">14</span>:<span class="number">48</span>:<span class="number">57</span></span><br><span class="line">tags:</span><br><span class="line">---</span><br></pre></td></tr></table></figure>
+<p>搞定收工！</p>
+<hr>
+<h1 id="隐藏多说的分享组件"><a href="#隐藏多说的分享组件" class="headerlink" title="隐藏多说的分享组件"></a>隐藏多说的分享组件</h1><p>多说是一个第三方社会评论系统，目前在国内可以说大概是用户最多的评论系统吧。但是使用多说的时候会带上（在我看来没X用的）分享组件。这里分享隐藏方式。</p>
+<p>原效果：</p>
+<p><img src="http://7xrybf.com1.z0.glb.clouddn.com/20160513_01_share1.png?imageMogr2/format/jpg" alt=""></p>
+<p>隐藏之后效果：</p>
+<p><img src="http://7xrybf.com1.z0.glb.clouddn.com/20160513_02_no_share.png?imageMogr2/format/jpg" alt=""></p>
+<p>首先找到多说的配置 css 文件 <code>duoshuo_share.swig</code>。由于我使用的是 NexT 主题，所以我的路径为 <code>/themes/next/layout/_partials/share/duoshuo_share_swig</code>,可供参考。</p>
+<p>打开该文件，修改最外层的 div 的首标签增加 <code>style=&quot;display:none&quot;</code> ，修改前：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;div class="ds-share flat" data-thread-key="&#123;&#123; page.path &#125;&#125;"</span><br></pre></td></tr></table></figure>
+<p>修改后：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;div style="display:none" class="ds-share flat" data-thread-key="&#123;&#123; page.path &#125;&#125;"</span><br></pre></td></tr></table></figure>
+<p>保存之后 clean 再 generate 即可。</p>
+<hr>
+<h1 id="隐藏多说评论框下的“分享到”组件"><a href="#隐藏多说评论框下的“分享到”组件" class="headerlink" title="隐藏多说评论框下的“分享到”组件"></a>隐藏多说评论框下的“分享到”组件</h1><p>上一条是隐藏多说评论框上方的“分享到”组件，这条是隐藏多说的评论框“发布”的按钮旁边一般也会有的“分享到”组件。</p>
+<p>原效果：</p>
+<p><img src="http://7xrybf.com1.z0.glb.clouddn.com/20160513_03_share2.png?imageMogr2/format/jpg" alt=""></p>
+<p>隐藏之后效果：</p>
+<p><img src="http://7xrybf.com1.z0.glb.clouddn.com/20160513_02_no_share.png?imageMogr2/format/jpg" alt=""></p>
+<p>首先找到多说的配置 css 文件 <code>duoshuo.styl</code>。由于我使用的是 NexT 主题，所以我的路径为 <code>/themes/next/source/css/_common/components/third-party/duoshuo.styl</code>，可供参考。</p>
+<p>打开该文件，在其中增加以下 4~6 行脚本：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.theme-next</span> &#123;</span><br><span class="line">  <span class="comment">/*原有配置不动*/</span></span><br><span class="line"></span><br><span class="line">  .ds-sync&#123;</span><br><span class="line">    <span class="attribute">display</span>:none !important;</span><br><span class="line">  &#125;<span class="comment">/*隐藏评论框底部分享*/</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>保存之后 clean 再 generate 即可。</p>
+<blockquote>
+<p>参考：</p>
+<p><a href="http://www.isiyuan.net/duoshuo-css.html" target="_blank" rel="noopener">多说css美化——心得 - 她与未来-思源</a></p>
+</blockquote>
+<hr>
+<h1 id="列表中插入代码块之后造成序号错乱"><a href="#列表中插入代码块之后造成序号错乱" class="headerlink" title="列表中插入代码块之后造成序号错乱"></a>列表中插入代码块之后造成序号错乱</h1><p>问题描述与解决方案类似 <a href="https://segmentfault.com/q/1010000000404082" target="_blank" rel="noopener">markdown的bug，博客预览与发布之后不一样。 - SegmentFault</a> ：</p>
+<blockquote>
+<p>因为生成页面时用的markdown引擎是PHP，然后预览用的是JS，是两套系统，所以在一些边边角角会有差异。</p>
+<p>预览显示了符合期望的代码，但是实际上预览的引擎是有问题的，因为代码段和三个列表项是同一缩进，也就是层级是一样的，因此，代码段不应解析为第二个列表项的附属内容，而应该解析为独立的内容。然后第“三”个列表项被解析为新列表的开头（因为Markdown的数字列表，前面的数字会自动重排的）。所以预览引擎的处理其实是错误的。</p>
+</blockquote>
+<p>但我实际发现，Markdown 语法本身并没有问题，或者说这个锅并不由 Markdown 背，而是应该怪罪于渲染引擎吧= =</p>
+<p>至少当我如下写时：（<strong>注意下面块中为了防止块中块被解析成代码块所以用“点点点”代替了表示代码块的点点点</strong>）</p>
+<pre><code>1. one
+2. two
+
+    点点点bash
+    my code1
+    my code2
+    my code3
+    点点点
+
+    hello
+
+3. three
+</code></pre><p>在我的 <code>Macdown</code> 编辑器中预览正常，在 CSDN 中发布也是正常，在 Hexo 中发布出现问题，会将我的 “hello” 页当成代码块，而 “3. three” 的序号则从1开始。</p>
+<p>我只能修改成这样：</p>
+<pre><code>1. one
+2. two
+
+        my code1
+        my code2
+        my code3
+
+    hello
+
+3. three
+</code></pre><p>COULD YOU SEE THE POINT ?</p>
+<p>使用 4 个缩进来表示内嵌，再使用 4 个缩进来表示代码块。如此解决方案，虽然预览与发布的效果都正确，但是却无法指定语言，也是个缺陷。</p>
+<hr>
+<h1 id="修改代码渲染样式（Huxblog）"><a href="#修改代码渲染样式（Huxblog）" class="headerlink" title="修改代码渲染样式（Huxblog）"></a>修改代码渲染样式（Huxblog）</h1><p>在我配置完 Huxblog 主题之后，发现它的代码高亮不尽人(我)意， 所以开始捣鼓如何修改 Huxblog 代码块的渲染样式。</p>
+<p>Huxblog 的代码高亮配置文件是 <code>themes/huxblog/source/css/syntax.styl</code> ，但是 <code>stylus</code> 语言我一窍不通，于是我上网查是否有大牛配置好的 styl 文件可以直接使用。找了许久都没找到，于是在室友葛(前端大神)的帮助下，找到了 <a href="https://github.com/isagalaev/highlight.js" target="_blank" rel="noopener">highlight.js</a>，于是下载了特别喜欢的 <code>monokai</code> 在葛的帮助下配置成功了。步骤大致如下：</p>
+<ol>
+<li><p>下载代码高亮渲染样式 css 文件 <code>monokai-sublime.css</code>，放入 <code>themes/huxblog/source/css/</code></p>
+</li>
+<li><p>修改 <code>themes/huxblog/layout/_partial/head.ejs</code> 文件，在其中</p>
+<pre><code>&lt;%- css(&apos;css/syntax&apos;) %&gt;
+</code></pre><p> 后面增加一行代码变成</p>
+<pre><code>&lt;%- css(&apos;css/syntax&apos;) %&gt;
+&lt;%- css(&apos;css/highlight.css&apos;) %&gt;
+</code></pre></li>
+<li><p>打开 <code>themes/huxblog/source/css/syntax.styl</code> 进行修改，删除对代码块高亮渲染的代码，删改处挺多，这里直接贴上修改后的 <code>syntax.styl</code> 文件：</p>
+ <figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><span class="line">.entry</span><br><span class="line">  .gist</span><br><span class="line">    <span class="attribute">background</span> <span class="number">#eee</span></span><br><span class="line">    <span class="attribute">border</span> <span class="number">1px</span> solid color-border</span><br><span class="line">    <span class="attribute">margin-top</span> <span class="number">15px</span></span><br><span class="line">    <span class="attribute">padding</span> <span class="number">7px</span> <span class="number">15px</span></span><br><span class="line">    <span class="attribute">border-radius</span> <span class="number">2px</span></span><br><span class="line">    <span class="attribute">text-shadow</span> <span class="number">0</span> <span class="number">0</span> <span class="number">1px</span> <span class="number">#fff</span></span><br><span class="line">    <span class="attribute">line-height</span> <span class="number">1.6</span></span><br><span class="line">    <span class="attribute">overflow</span> auto</span><br><span class="line">    <span class="attribute">color</span> <span class="number">#666</span></span><br><span class="line">    .gist-file</span><br><span class="line">      <span class="attribute">border</span> none</span><br><span class="line">      <span class="attribute">font-family</span> inherit</span><br><span class="line">      <span class="attribute">margin</span> <span class="number">0</span></span><br><span class="line">      <span class="attribute">font-size</span> <span class="number">0.9em</span></span><br><span class="line">      .gist-data</span><br><span class="line">        <span class="attribute">background</span> none</span><br><span class="line">        <span class="attribute">border-bottom</span> none</span><br><span class="line">        pre</span><br><span class="line">          <span class="attribute">padding</span> <span class="number">0</span> !important</span><br><span class="line">          <span class="attribute">font-family</span> font-mono</span><br><span class="line">      .gist-meta</span><br><span class="line">        <span class="attribute">background</span> none</span><br><span class="line">        <span class="attribute">color</span> color-meta</span><br><span class="line">        <span class="attribute">margin-top</span> <span class="number">5px</span></span><br><span class="line">        <span class="attribute">padding</span> <span class="number">0</span></span><br><span class="line">        <span class="attribute">text-shadow</span> <span class="number">0</span> <span class="number">0</span> <span class="number">1px</span> <span class="number">#fff</span></span><br><span class="line">        <span class="attribute">font-size</span> <span class="number">100%</span></span><br><span class="line">        a</span><br><span class="line">          <span class="attribute">color</span> color-link</span><br><span class="line">          &amp;:visited</span><br><span class="line">            <span class="attribute">color</span> color-link</span><br><span class="line">            </span><br><span class="line"><span class="selector-tag">figure</span>.highlight</span><br><span class="line">  <span class="attribute">border</span> <span class="number">1px</span> solid color-border</span><br><span class="line">  <span class="attribute">margin-top</span> <span class="number">15px</span></span><br><span class="line">  <span class="attribute">padding</span> <span class="number">7px</span> <span class="number">15px</span></span><br><span class="line">  <span class="attribute">border-radius</span> <span class="number">2px</span></span><br><span class="line">  <span class="attribute">line-height</span> <span class="number">1.6</span></span><br><span class="line">  <span class="attribute">overflow</span> auto</span><br><span class="line">  <span class="attribute">position</span> relative</span><br><span class="line">  <span class="attribute">font-size</span> <span class="number">0.9em</span></span><br><span class="line">  figcaption</span><br><span class="line">    <span class="attribute">color</span> color-meta</span><br><span class="line">    <span class="attribute">margin-bottom</span> <span class="number">5px</span></span><br><span class="line">    a</span><br><span class="line">      <span class="attribute">position</span> absolute</span><br><span class="line">      <span class="attribute">right</span> <span class="number">15px</span></span><br><span class="line"></span><br><span class="line">  table</span><br><span class="line">    <span class="attribute">margin-top</span> <span class="number">0</span></span><br><span class="line">    <span class="attribute">border-spacing</span> <span class="number">0</span></span><br><span class="line"></span><br><span class="line">  .gutter</span><br><span class="line">    <span class="attribute">color</span> color-meta</span><br><span class="line">    <span class="attribute">padding-right</span> <span class="number">15px</span></span><br><span class="line">    <span class="attribute">border-right</span> <span class="number">1px</span> solid color-border</span><br><span class="line">    <span class="attribute">text-align</span> right</span><br><span class="line"></span><br><span class="line">  .code</span><br><span class="line">    <span class="attribute">border-left</span> <span class="number">1px</span> solid <span class="number">#fff</span></span><br><span class="line">    <span class="attribute">color</span> <span class="number">#666</span></span><br><span class="line"></span><br><span class="line">  .line</span><br><span class="line">    <span class="attribute">height</span>: <span class="number">20px</span>		</span><br><span class="line"></span><br><span class="line">.gutter</span><br><span class="line">  <span class="attribute">width</span> <span class="number">70px</span></span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>修改完成之后我们的 <code>Huxblog</code> 主题顺利地将代码块高亮渲染样式改成了人见人爱的 <code>monokai</code> ~</p>
+<blockquote>
+<p>PS：关于 Hexo 的主题，可以点击 <a href="http://ptkin.github.io/2016/05/18/%E6%8A%98%E8%85%BEHexo%E7%9A%84%E4%B8%BB%E9%A2%98/" target="_blank" rel="noopener"><strong>这里</strong></a> 查看我的另一篇文章《折腾Hexo的主题》。</p>
+</blockquote>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Blog/" rel="tag">#Blog</a>
+          
+            <a href="/tags/Hexo/" rel="tag">#Hexo</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/install_ubuntu_to_ssd/" rel="prev" title="将Ubuntu安装到移动硬盘">
+                将Ubuntu安装到移动硬盘 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="//schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpg"
+               alt="ptkin" />
+          <p class="site-author-name" itemprop="name">ptkin</p>
+          <p class="site-description motion-element" itemprop="description">Do it! Finish it! Now!</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">19</span>
+              <span class="site-state-item-name">posts</span>
+            </a>
+          </div>
+
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">41</span>
+                <span class="site-state-item-name">tags</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-block">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              Links
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://zhuanlan.zhihu.com/ai-insight" title="AI Insight" target="_blank">AI Insight</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://karpathy.github.io/" title="Andrej Karpathy blog" target="_blank">Andrej Karpathy blog</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://zh.mxnet.io/blog/" title="ApacheMXNet" target="_blank">ApacheMXNet</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://cenalulu.github.io/" title="cenalulu'S Tech Blog" target="_blank">cenalulu'S Tech Blog</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://chrisalbon.com/" title="Chris Albon" target="_blank">Chris Albon</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://blog.codinglabs.org/" title="CodingLabs" target="_blank">CodingLabs</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://colah.github.io/" title="colah's blog" target="_blank">colah's blog</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://distill.pub/" title="Distill" target="_blank">Distill</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://saicoco.github.io/" title="Fix you" target="_blank">Fix you</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.figotan.org/" title="FIGOTAN's Blog" target="_blank">FIGOTAN's Blog</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://freemind.pluskid.org/" title="Free Mind" target="_blank">Free Mind</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://charlesliuyx.github.io/" title="Go Further" target="_blank">Go Further</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://hahack.com/" title="HaHack" target="_blank">HaHack</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://handong1587.github.io" title="handong1587's blog" target="_blank">handong1587's blog</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://iceory.github.io/" title="iceory's blog" target="_blank">iceory's blog</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.codelast.com/" title="Intent & Focused" target="_blank">Intent & Focused</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://joshua881228.webfactional.com/blog_my-jumble-of-computer-vison_135/" title="JOSHUA'S BLOG" target="_blank">JOSHUA'S BLOG</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://juniperphoton.net/" title="JuniperPhoton's Blog" target="_blank">JuniperPhoton's Blog</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://closure11.com/" title="LHY's World" target="_blank">LHY's World</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://machinelearningmastery.com/" title="Machine Learning Mastery" target="_blank">Machine Learning Mastery</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.cnblogs.com/neopenx/" title="Physcalの大魔導書" target="_blank">Physcalの大魔導書</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://blog.csdn.net/abcjennifer" title="Rachel Zhang" target="_blank">Rachel Zhang</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://ruder.io/" title="Sebastian Ruder" target="_blank">Sebastian Ruder</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://zohead.com/" title="Soul Of Free Loop" target="_blank">Soul Of Free Loop</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://styletin.com/" title="Styletin" target="_blank">Styletin</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://timdettmers.com/" title="Tim Dettmers" target="_blank">Tim Dettmers</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.wildml.com/" title="WildML" target="_blank">WildML</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://dnc1994.com/" title="Wille" target="_blank">Wille</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://program-think.blogspot.com/" title="编程随想" target="_blank">编程随想</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://blog.csdn.net/red_stone1/" title="红色de石头" target="_blank">红色de石头</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://kenengba.com/" title="可能吧" target="_blank">可能吧</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://spaces.ac.cn/" title="科学空间" target="_blank">科学空间</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://coolshell.cn/" title="酷壳" target="_blank">酷壳</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://luolei.org/" title="罗磊" target="_blank">罗磊</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://blog.jimmylv.info/" title="吕立青的博客" target="_blank">吕立青的博客</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.hankcs.com/" title="码农场" target="_blank">码农场</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.fuzihao.org/blog/" title="切问录" target="_blank">切问录</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://perthcharles.github.io/" title="天赋 无与伦比的坚持" target="_blank">天赋 无与伦比的坚持</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://www.dandyweng.com/" title="翁天信" target="_blank">翁天信</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.52nlp.cn/" title="我爱自然语言处理" target="_blank">我爱自然语言处理</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://zhuanlan.zhihu.com/hsmyy" title="无痛的机器学习" target="_blank">无痛的机器学习</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.duanshishi.com/" title="小石头的码疯窝" target="_blank">小石头的码疯窝</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.read.org.cn/" title="战隼的学习探索" target="_blank">战隼的学习探索</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://ccjou.wordpress.com/" title="線代啟示錄" target="_blank">線代啟示錄</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Hexo-的搭建"><span class="nav-number">1.</span> <span class="nav-text">Hexo 的搭建</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#hexo-server-不能本地访问"><span class="nav-number">2.</span> <span class="nav-text">hexo server 不能本地访问</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ERROR-Process-failed-layout-partials-DS-Store"><span class="nav-number">3.</span> <span class="nav-text">ERROR Process failed: layout/_partials/.DS_Store</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#自定义文章的-rul"><span class="nav-number">4.</span> <span class="nav-text">自定义文章的 rul</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#方法一："><span class="nav-number">4.1.</span> <span class="nav-text">方法一：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#方法二："><span class="nav-number">4.2.</span> <span class="nav-text">方法二：</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#修改新建文章的默认-Front-matter"><span class="nav-number">5.</span> <span class="nav-text">修改新建文章的默认 Front-matter</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#隐藏多说的分享组件"><span class="nav-number">6.</span> <span class="nav-text">隐藏多说的分享组件</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#隐藏多说评论框下的“分享到”组件"><span class="nav-number">7.</span> <span class="nav-text">隐藏多说评论框下的“分享到”组件</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#列表中插入代码块之后造成序号错乱"><span class="nav-number">8.</span> <span class="nav-text">列表中插入代码块之后造成序号错乱</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#修改代码渲染样式（Huxblog）"><span class="nav-number">9.</span> <span class="nav-text">修改代码渲染样式（Huxblog）</span></a></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2016 - 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ptkin</span>
+</div>
+
+
+        
+
+<div class="busuanzi-count">
+
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+
+  
+  
+</div>
+
+
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.0.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.0.2"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.2"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+  
+  
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length == 0) {
+       search_path = "search.xml";
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    function proceedsearch() {
+      $("body").append('<div class="popoverlay">').css('overflow', 'hidden');
+      $('.popup').toggle();
+
+    }
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+    'use strict';
+    $.ajax({
+        url: path,
+        dataType: "xml",
+        async: true,
+        success: function( xmlResponse ) {
+            // get the contents from search data
+            isfetched = true;
+            $('.popup').detach().appendTo('.header-inner');
+            var datas = $( "entry", xmlResponse ).map(function() {
+                return {
+                    title: $( "title", this ).text(),
+                    content: $("content",this).text(),
+                    url: $( "url" , this).text()
+                };
+            }).get();
+            var $input = document.getElementById(search_id);
+            var $resultContent = document.getElementById(content_id);
+            $input.addEventListener('input', function(){
+                var matchcounts = 0;
+                var str='<ul class=\"search-result-list\">';
+                var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+                $resultContent.innerHTML = "";
+                if (this.value.trim().length > 1) {
+                // perform local searching
+                datas.forEach(function(data) {
+                    var isMatch = false;
+                    var content_index = [];
+                    var data_title = data.title.trim().toLowerCase();
+                    var data_content = data.content.trim().replace(/<[^>]+>/g,"").toLowerCase();
+                    var data_url = data.url;
+                    var index_title = -1;
+                    var index_content = -1;
+                    var first_occur = -1;
+                    // only match artiles with not empty titles and contents
+                    if(data_title != '') {
+                        keywords.forEach(function(keyword, i) {
+                            index_title = data_title.indexOf(keyword);
+                            index_content = data_content.indexOf(keyword);
+                            if( index_title >= 0 || index_content >= 0 ){
+                                isMatch = true;
+								if (i == 0) {
+                                    first_occur = index_content;
+                                }
+                            } 
+							
+                        });
+                    }
+                    // show search results
+                    if (isMatch) {
+                        matchcounts += 1;
+                        str += "<li><a href='"+ data_url +"' class='search-result-title'>"+ data_title +"</a>";
+                        var content = data.content.trim().replace(/<[^>]+>/g,"");
+                        if (first_occur >= 0) {
+                            // cut out 100 characters
+                            var start = first_occur - 20;
+                            var end = first_occur + 80;
+                            if(start < 0){
+                                start = 0;
+                            }
+                            if(start == 0){
+                                end = 50;
+                            }
+                            if(end > content.length){
+                                end = content.length;
+                            }
+                            var match_content = content.substring(start, end);
+                            // highlight all keywords
+                            keywords.forEach(function(keyword){
+                                var regS = new RegExp(keyword, "gi");
+                                match_content = match_content.replace(regS, "<b class=\"search-keyword\">"+keyword+"</b>");
+                            });
+
+                            str += "<p class=\"search-result\">" + match_content +"...</p>"
+                        }
+                        str += "</li>";
+                    }
+                })};
+                str += "</ul>";
+                if (matchcounts == 0) { str = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>' }
+                if (keywords == "") { str = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>' }
+                $resultContent.innerHTML = str;
+            });
+            proceedsearch();
+        }
+    });}
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched == false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+
+    });
+
+    $('.popup-btn-close').click(function(e){
+      $('.popup').hide();
+      $(".popoverlay").remove();
+      $('body').css('overflow', '');
+    });
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+  </script>
+
+
+  
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+  </script>
+
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+      for (i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+    });
+  </script>
+  <script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+
+  
+
+  
+
+  
+
+
+</body>
+</html>
